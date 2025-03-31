@@ -11,6 +11,8 @@ import (
 	"time"
 
 	"github.com/fgeck/go-register/internal/repository"
+	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5/pgtype"
 	"golang.org/x/crypto/argon2"
 )
 
@@ -35,17 +37,17 @@ type argon2Params struct {
 	keyLength   uint32
 }
 
-func NewAuthService(repo repository.Querier) *AuthService {
+func NewAuthService(repo repository.Querier, cfg AuthConfig) *AuthService {
 	return &AuthService{
 		repo:          repo,
-		sessionExpiry: 24 * time.Hour * 7,      // 1 week sessions
-		pepper:        "your-app-pepper-value", // In prod, load from secure config
+		sessionExpiry: cfg.SessionExpiry,
+		pepper:        cfg.Pepper,
 		argon2Params: &argon2Params{
-			memory:      64 * 1024, // 64MB
-			iterations:  3,
-			parallelism: 2,
-			saltLength:  16, // 16 bytes
-			keyLength:   32, // 32 bytes
+			memory:      cfg.Argon2Params.Memory,
+			iterations:  cfg.Argon2Params.Iterations,
+			parallelism: cfg.Argon2Params.Parallelism,
+			saltLength:  cfg.Argon2Params.SaltLength,
+			keyLength:   cfg.Argon2Params.KeyLength,
 		},
 	}
 }
@@ -99,7 +101,7 @@ func (s *AuthService) Login(ctx context.Context, email, password string) (string
 	// Create session
 	session, err := s.repo.CreateSession(ctx, repository.CreateSessionParams{
 		UserID:    user.ID,
-		ExpiresAt: time.Now().Add(s.sessionExpiry),
+		ExpiresAt: pgtype.Timestamptz{Time: time.Now().Add(s.sessionExpiry)},
 	})
 	if err != nil {
 		return "", fmt.Errorf("failed to create session: %w", err)
@@ -110,22 +112,23 @@ func (s *AuthService) Login(ctx context.Context, email, password string) (string
 
 // Logout invalidates a session
 func (s *AuthService) Logout(ctx context.Context, sessionID string) error {
-	return s.repo.DeleteSession(ctx, sessionID)
+	return s.repo.DeleteSession(ctx, pgtype.UUID{Bytes: uuid.MustParse(sessionID)})
 }
 
 // GetUserFromSession returns user if session is valid
 func (s *AuthService) GetUserFromSession(ctx context.Context, sessionID string) (*repository.User, error) {
-	session, err := s.repo.GetSession(ctx, sessionID)
+	session, err := s.repo.GetSession(ctx, pgtype.UUID{Bytes: uuid.MustParse(sessionID)})
 	if err != nil {
 		return nil, err
 	}
 
-	if session.ExpiresAt.Before(time.Now()) {
-		_ = s.repo.DeleteSession(ctx, sessionID) // Cleanup expired session
+	if session.ExpiresAt.Time.Before(time.Now()) {
+		_ = s.repo.DeleteSession(ctx, pgtype.UUID{Bytes: uuid.MustParse(sessionID)}) // Cleanup expired session
 		return nil, errors.New("session expired")
 	}
+	user, err := s.repo.GetUser(ctx, session.UserID)
 
-	return s.repo.GetUser(ctx, session.UserID)
+	return &user, err
 }
 
 // --- Password Hashing Utilities ---

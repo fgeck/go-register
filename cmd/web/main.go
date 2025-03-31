@@ -13,7 +13,9 @@ import (
 	"github.com/fgeck/go-register/internal/handlers"
 	"github.com/fgeck/go-register/internal/repository"
 	"github.com/fgeck/go-register/internal/server"
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
+	pgxUUID "github.com/vgarvardt/pgx-google-uuid/v5"
 )
 
 func main() {
@@ -25,14 +27,24 @@ func main() {
 	defer cancel()
 
 	// Database setup
-	dbpool, err := pgxpool.New(ctx, cfg.DatabaseURL)
+	pgxConfig, err := pgxpool.ParseConfig(cfg.DatabaseURL)
 	if err != nil {
-		log.Fatalf("Unable to connect to database: %v\n", err)
+		panic(err)
 	}
-	defer dbpool.Close()
+
+	pgxConfig.AfterConnect = func(ctx context.Context, conn *pgx.Conn) error {
+		pgxUUID.Register(conn.TypeMap())
+		return nil
+	}
+
+	pgxConnPool, err := pgxpool.NewWithConfig(context.TODO(), pgxConfig)
+	if err != nil {
+		panic(err)
+	}
+	defer pgxConnPool.Close()
 
 	// Verify database connection
-	if err := dbpool.Ping(ctx); err != nil {
+	if err := pgxConnPool.Ping(ctx); err != nil {
 		log.Fatalf("Database ping failed: %v\n", err)
 	}
 
@@ -42,13 +54,13 @@ func main() {
 	}
 
 	// Initialize repository
-	repo := repository.New(dbpool)
+	repo := repository.New(pgxConnPool)
 
 	// Auth service setup with config
 	authService := auth.NewAuthService(repo, auth.AuthConfig{
 		SessionExpiry: 7 * 24 * time.Hour, // 1 week
 		Pepper:        cfg.SessionSecret,
-		Argon2Params: auth.Argon2Params{
+		Argon2Params: &auth.Argon2Params{
 			Memory:      cfg.Argon2Config.Memory,
 			Iterations:  cfg.Argon2Config.Iterations,
 			Parallelism: cfg.Argon2Config.Parallelism,
