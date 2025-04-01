@@ -2,120 +2,80 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
 	"os/signal"
-	"syscall"
 	"time"
 
-	"github.com/fgeck/go-register/internal/auth"
 	"github.com/fgeck/go-register/internal/handlers"
-	"github.com/fgeck/go-register/internal/repository"
-	"github.com/fgeck/go-register/internal/server"
-	"github.com/jackc/pgx/v5"
-	"github.com/jackc/pgx/v5/pgxpool"
-	pgxUUID "github.com/vgarvardt/pgx-google-uuid/v5"
+	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 )
 
 func main() {
 	// Load configuration
-	cfg := loadConfig()
+	// cfg := loadConfig()
+	port := "8080"
 
 	// Initialize context with timeout for startup operations
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
+	// ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	// defer cancel()
 
-	// Database setup
-	pgxConfig, err := pgxpool.ParseConfig(cfg.DatabaseURL)
-	if err != nil {
-		panic(err)
-	}
+	// // Database setup
+	// pgxConfig, err := pgxpool.ParseConfig("postgres://user:password@localhost:5432/postgres?sslmode=disable")
+	// if err != nil {
+	// 	panic(err)
+	// }
 
-	pgxConfig.AfterConnect = func(ctx context.Context, conn *pgx.Conn) error {
-		pgxUUID.Register(conn.TypeMap())
-		return nil
-	}
+	// pgxConfig.AfterConnect = func(ctx context.Context, conn *pgx.Conn) error {
+	// 	pgxUUID.Register(conn.TypeMap())
+	// 	return nil
+	// }
 
-	pgxConnPool, err := pgxpool.NewWithConfig(context.TODO(), pgxConfig)
-	if err != nil {
-		panic(err)
-	}
-	defer pgxConnPool.Close()
+	// pgxConnPool, err := pgxpool.NewWithConfig(context.TODO(), pgxConfig)
+	// if err != nil {
+	// 	panic(err)
+	// }
+	// defer pgxConnPool.Close()
 
-	// Verify database connection
-	if err := pgxConnPool.Ping(ctx); err != nil {
-		log.Fatalf("Database ping failed: %v\n", err)
-	}
+	// // Verify database connection
+	// if err := pgxConnPool.Ping(ctx); err != nil {
+	// 	log.Fatalf("Database ping failed: %v\n", err)
+	// }
 
 	// Run migrations
-	if err := runMigrations(cfg.DatabaseURL); err != nil {
-		log.Fatalf("Migrations failed: %v\n", err)
-	}
+	// if err := runMigrations(cfg.DatabaseURL); err != nil {
+	// 	log.Fatalf("Migrations failed: %v\n", err)
+	// }
 
 	// Initialize repository
-	repo := repository.New(pgxConnPool)
+	// repo := repository.New(pgxConnPool)
 
-	// Auth service setup with config
-	authService := auth.NewAuthService(repo, auth.AuthConfig{
-		SessionExpiry: 7 * 24 * time.Hour, // 1 week
-		Pepper:        cfg.SessionSecret,
-		Argon2Params: &auth.Argon2Params{
-			Memory:      cfg.Argon2Config.Memory,
-			Iterations:  cfg.Argon2Config.Iterations,
-			Parallelism: cfg.Argon2Config.Parallelism,
-			SaltLength:  cfg.Argon2Config.SaltLength,
-			KeyLength:   cfg.Argon2Config.KeyLength,
-		},
-	})
+	// Initialize server
+	e := echo.New()
+	// Middleware
+	e.Use(middleware.Logger())
+	// create and use render
 
-	// Handlers setup
-	authHandler := handlers.NewAuthHandler(authService)
-	homeHandler := handlers.NewHomeHandler(authService)
+	e.GET("/", handlers.HomeHandler)
 
-	// HTTP Server setup
-	srv := server.NewServer(authHandler, homeHandler)
-
-	// Add middleware stack
-	srv.Use(
-		server.RequestLogger,
-		authService.AuthMiddleware,
-		server.CSRFProtection(cfg.CSRFKey),
-	)
-
-	// Graceful shutdown setup
-	done := make(chan os.Signal, 1)
-	signal.Notify(done, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
-
+	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt)
+	defer stop()
 	// Start server
 	go func() {
-		log.Printf("Server starting on %s (HTTPS: %v)\n", cfg.ServerAddress, cfg.HTTPS)
-
-		var err error
-		if cfg.HTTPS {
-			err = srv.Start(cfg.ServerAddress)
-		} else {
-			err = srv.Start(cfg.ServerAddress)
-		}
-
-		if err != nil && err != http.ErrServerClosed {
-			log.Fatalf("Server error: %v\n", err)
+		if err := e.Start(fmt.Sprintf(":%s", port)); err != nil && err != http.ErrServerClosed {
+			e.Logger.Fatal("shutting down the server")
 		}
 	}()
 
-	// Wait for shutdown signal
-	<-done
-	log.Println("Server shutting down...")
-
-	// Create shutdown context with timeout
-	shutdownCtx, shutdownCancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer shutdownCancel()
-
-	// Attempt graceful shutdown
-	if err := srv.Shutdown(shutdownCtx); err != nil {
-		log.Printf("Graceful shutdown failed: %v\n", err)
-	} else {
-		log.Println("Server stopped gracefully")
+	// Wait for interrupt signal to gracefully shut down the server with a timeout of 10 seconds.
+	<-ctx.Done()
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	if err := e.Shutdown(ctx); err != nil {
+		e.Logger.Fatal(err)
 	}
 }
 
