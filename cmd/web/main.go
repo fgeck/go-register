@@ -59,6 +59,7 @@ func main() {
 	e.Use(middleware.Logger())
 	// create and use render
 
+	e.Static("/", "public")
 	e.GET("/", handlers.HomeHandler)
 
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt)
