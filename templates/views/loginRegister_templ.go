@@ -10,7 +10,7 @@ import templruntime "github.com/a-h/templ/runtime"
 
 import "github.com/fgeck/go-register/templates/layout"
 
-func Home() templ.Component {
+func LoginRegister() templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -43,7 +43,15 @@ func Home() templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<nav class=\"bg-slate-800 p-4\"><div class=\"container mx-auto flex justify-between items-center\"><a href=\"/\" class=\"text-white text-2xl font-bold\">MyApp</a><div><a href=\"/login\" class=\"text-slate-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium\">Login</a> <a href=\"/register\" class=\"text-slate-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium\">Register</a></div></div></nav><div class=\"flex flex-col items-center justify-center min-h-screen bg-slate-100\"><div class=\"text-center\"><h1 class=\"text-7xl font-bold text-blue-600\">Welcome home, Dude!</h1><p class=\"text-2xl text-slate-700 mt-4\">This is a simple web application</p></div></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"flex flex-col items-center justify-center min-h-screen bg-gray-100\"><div class=\"w-full max-w-md p-8 bg-white rounded-lg shadow-md\"><!-- Tabs for Login and Register --><div class=\"flex justify-center mb-6\"><button hx-get=\"/loginForm\" hx-target=\"#form-container\" hx-swap=\"innerHTML\" class=\"px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-l-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500\">Login</button> <button hx-get=\"/registerForm\" hx-target=\"#form-container\" hx-swap=\"innerHTML\" class=\"px-4 py-2 text-sm font-medium text-indigo-600 bg-gray-200 rounded-r-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500\">Register</button></div><!-- Form Container --><div id=\"form-container\" class=\"space-y-6\"><!-- Default to Login Form -->")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = LoginForm().Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</div></div></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
