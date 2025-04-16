@@ -39,4 +39,6 @@ air &
 * [ ] On startup register admin user based on env
 * [ ] build register handler for storing in db
 * [ ] build login handler emitting JWT with proper claims
+* [ ] Loggingframework like logrus
+* [ ] Dependency Injection Framework?
 * [ ] 

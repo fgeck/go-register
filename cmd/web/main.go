@@ -11,10 +11,11 @@ import (
 
 	"github.com/fgeck/go-register/internal/handlers"
 	"github.com/fgeck/go-register/internal/repository"
-	"github.com/jackc/pgx"
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	pgxUUID "github.com/vgarvardt/pgx-google-uuid/v5"
 )
 
 func main() {
@@ -54,7 +55,7 @@ func main() {
 	// }
 
 	// Initialize repository
-	repo := repository.New(pgxConnPool)
+	queries := repository.New(pgxConnPool)
 
 	// Initialize server
 	e := echo.New()
@@ -62,7 +63,7 @@ func main() {
 	e.Use(middleware.Logger())
 	// create and use render
 
-	handlers.SetupHandlers(e)
+	handlers.SetupHandlers(e, queries)
 
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt)
 	defer stop()
@@ -75,7 +76,7 @@ func main() {
 
 	// Wait for interrupt signal to gracefully shut down the server with a timeout of 10 seconds.
 	<-ctx.Done()
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, cancel = context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	if err := e.Shutdown(ctx); err != nil {
 		e.Logger.Fatal(err)

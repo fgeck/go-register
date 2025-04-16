@@ -1,10 +1,10 @@
-package service
+package user
 
 import (
 	"context"
 
 	"github.com/fgeck/go-register/internal/repository"
-	service "github.com/fgeck/go-register/internal/service/validation"
+	"github.com/fgeck/go-register/internal/service/validation"
 )
 
 type UserServiceInterface interface {
@@ -13,18 +13,28 @@ type UserServiceInterface interface {
 }
 
 type UserService struct {
-	repo      *repository.Queries
-	validator *service.ValidationService
+	queries   *repository.Queries
+	validator validation.ValidationServiceInterface
 }
 
-func NewUserService(repo *repository.Queries) *UserService {
+func NewUserService(queries *repository.Queries, validator validation.ValidationServiceInterface) *UserService {
 	return &UserService{
-		repo: repo,
+		queries:   queries,
+		validator: validator,
 	}
 }
 
-func (s *UserService) CreateUser(ctx context.Context, username, email, passwordHash string) (repository.User, error) {
-	user, err := s.repo.CreateUser(
+type UserCreatedDto struct {
+	Username string `json:"username"`
+	Email    string `json:"email"`
+}
+
+func NewUserCreatedDto(username, email string) *UserCreatedDto {
+	return &UserCreatedDto{username, email}
+}
+
+func (s *UserService) CreateUser(ctx context.Context, username, email, passwordHash string) (*UserCreatedDto, error) {
+	user, err := s.queries.CreateUser(
 		ctx,
 		repository.CreateUserParams{
 			Username:     username,
@@ -33,9 +43,10 @@ func (s *UserService) CreateUser(ctx context.Context, username, email, passwordH
 		},
 	)
 	if err != nil {
-		return repository.User{}, err
+		return nil, err
 	}
-	return user, nil
+
+	return NewUserCreatedDto(user.Username, user.Email), nil
 }
 
 func (s *UserService) ValidateCreateUserParams(username, email, password string) error {
