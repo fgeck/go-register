@@ -11,12 +11,10 @@ import (
 )
 
 type Querier interface {
-	CreateSession(ctx context.Context, arg CreateSessionParams) (Session, error)
 	CreateUser(ctx context.Context, arg CreateUserParams) (User, error)
-	DeleteSession(ctx context.Context, id pgtype.UUID) error
-	GetSession(ctx context.Context, id pgtype.UUID) (Session, error)
-	GetUser(ctx context.Context, id int32) (User, error)
+	GetUser(ctx context.Context, id pgtype.UUID) (User, error)
 	GetUserByEmail(ctx context.Context, email string) (User, error)
+	UserExistsByEmail(ctx context.Context, email string) (bool, error)
 }
 
 var _ Querier = (*Queries)(nil)

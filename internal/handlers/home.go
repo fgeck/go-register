@@ -1,7 +1,7 @@
 package handlers
 
 import (
-	"github.com/fgeck/go-register/internal/render"
+	"github.com/fgeck/go-register/internal/service/render"
 	views "github.com/fgeck/go-register/templates/views"
 	echo "github.com/labstack/echo/v4"
 )

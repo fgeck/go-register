@@ -10,6 +10,9 @@ import (
 	"time"
 
 	"github.com/fgeck/go-register/internal/handlers"
+	"github.com/fgeck/go-register/internal/repository"
+	"github.com/jackc/pgx"
+	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )
@@ -20,30 +23,30 @@ func main() {
 	port := "8080"
 
 	// Initialize context with timeout for startup operations
-	// ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	// defer cancel()
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
 
-	// // Database setup
-	// pgxConfig, err := pgxpool.ParseConfig("postgres://user:password@localhost:5432/postgres?sslmode=disable")
-	// if err != nil {
-	// 	panic(err)
-	// }
+	// Database setup
+	pgxConfig, err := pgxpool.ParseConfig("postgres://user:password@localhost:5432/postgres?sslmode=disable")
+	if err != nil {
+		panic(err)
+	}
 
-	// pgxConfig.AfterConnect = func(ctx context.Context, conn *pgx.Conn) error {
-	// 	pgxUUID.Register(conn.TypeMap())
-	// 	return nil
-	// }
+	pgxConfig.AfterConnect = func(ctx context.Context, conn *pgx.Conn) error {
+		pgxUUID.Register(conn.TypeMap())
+		return nil
+	}
 
-	// pgxConnPool, err := pgxpool.NewWithConfig(context.TODO(), pgxConfig)
-	// if err != nil {
-	// 	panic(err)
-	// }
-	// defer pgxConnPool.Close()
+	pgxConnPool, err := pgxpool.NewWithConfig(context.TODO(), pgxConfig)
+	if err != nil {
+		panic(err)
+	}
+	defer pgxConnPool.Close()
 
-	// // Verify database connection
-	// if err := pgxConnPool.Ping(ctx); err != nil {
-	// 	log.Fatalf("Database ping failed: %v\n", err)
-	// }
+	// Verify database connection
+	if err := pgxConnPool.Ping(ctx); err != nil {
+		log.Fatalf("Database ping failed: %v\n", err)
+	}
 
 	// Run migrations
 	// if err := runMigrations(cfg.DatabaseURL); err != nil {
@@ -51,7 +54,7 @@ func main() {
 	// }
 
 	// Initialize repository
-	// repo := repository.New(pgxConnPool)
+	repo := repository.New(pgxConnPool)
 
 	// Initialize server
 	e := echo.New()
@@ -59,7 +62,7 @@ func main() {
 	e.Use(middleware.Logger())
 	// create and use render
 
-	handlers.RegisterAllHandlers(e)
+	handlers.SetupHandlers(e)
 
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt)
 	defer stop()
