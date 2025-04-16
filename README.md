@@ -30,7 +30,7 @@ air &
 * [tailwindcss](https://tailwindcss.com/)
 * [daisyui](https://daisyui.com/) ?
 
-## ToDO
+## ToDo
 
 * [x] Echo Server renders templ templates
 * [x] Add Tailwind to templates
@@ -38,7 +38,10 @@ air &
 * [ ] Add DaisyUI?
 * [ ] On startup register admin user based on env
 * [ ] build register handler for storing in db
+    * [ ] password salting and hashing before storing
+    * [ ] security related config - introduce config from ENV
 * [ ] build login handler emitting JWT with proper claims
 * [ ] Loggingframework like logrus
 * [ ] Dependency Injection Framework?
+* [ ] github actions for: fmt, golangci lint, build, test
 * [ ] 

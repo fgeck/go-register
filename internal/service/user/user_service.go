@@ -2,6 +2,7 @@ package user
 
 import (
 	"context"
+	"errors"
 
 	"github.com/fgeck/go-register/internal/repository"
 	"github.com/fgeck/go-register/internal/service/validation"
@@ -13,11 +14,11 @@ type UserServiceInterface interface {
 }
 
 type UserService struct {
-	queries   *repository.Queries
+	queries   repository.Querier
 	validator validation.ValidationServiceInterface
 }
 
-func NewUserService(queries *repository.Queries, validator validation.ValidationServiceInterface) *UserService {
+func NewUserService(queries repository.Querier, validator validation.ValidationServiceInterface) *UserService {
 	return &UserService{
 		queries:   queries,
 		validator: validator,
@@ -34,6 +35,15 @@ func NewUserCreatedDto(username, email string) *UserCreatedDto {
 }
 
 func (s *UserService) CreateUser(ctx context.Context, username, email, passwordHash string) (*UserCreatedDto, error) {
+	userExists, err := s.queries.UserExistsByEmail(ctx, email)
+	if err != nil {
+		// Todo log error
+		return nil, err
+	}
+	if userExists {
+		return nil, errors.New("user already exists")
+	}
+
 	user, err := s.queries.CreateUser(
 		ctx,
 		repository.CreateUserParams{
@@ -43,6 +53,7 @@ func (s *UserService) CreateUser(ctx context.Context, username, email, passwordH
 		},
 	)
 	if err != nil {
+		// Todo log error
 		return nil, err
 	}
 

@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/fgeck/go-register/internal/service/render"
-	user "github.com/fgeck/go-register/internal/service/user"
+	"github.com/fgeck/go-register/internal/service/user"
 	"github.com/fgeck/go-register/templates/views"
 	echo "github.com/labstack/echo/v4"
 )
