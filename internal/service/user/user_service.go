@@ -2,14 +2,19 @@ package user
 
 import (
 	"context"
+	"database/sql"
 	"errors"
+
+	"github.com/google/uuid"
 
 	"github.com/fgeck/go-register/internal/repository"
 	"github.com/fgeck/go-register/internal/service/validation"
 )
 
 type UserServiceInterface interface {
-	CreateUser(ctx context.Context, username, email, passwordHash string) (repository.User, error)
+	CreateUser(ctx context.Context, username, email, passwordHash string) (*UserCreatedDto, error)
+	GetUserByEmail(ctx context.Context, email string) (*UserDto, error)
+	UserExistsByEmail(ctx context.Context, email string) (bool, error)
 	ValidateCreateUserParams(username, email, password string) error
 }
 
@@ -25,6 +30,21 @@ func NewUserService(queries repository.Querier, validator validation.ValidationS
 	}
 }
 
+type UserDto struct {
+	ID           uuid.UUID `json:"id"`
+	Username     string    `json:"username"`
+	Email        string    `json:"email"`
+	PasswordHash string    `json:"password_hash"`
+}
+
+func NewUserDto(user repository.User) *UserDto {
+	return &UserDto{
+		ID:       uuid.UUID(user.ID.Bytes),
+		Username: user.Username,
+		Email:    user.Email,
+	}
+}
+
 type UserCreatedDto struct {
 	Username string `json:"username"`
 	Email    string `json:"email"`
@@ -34,22 +54,27 @@ func NewUserCreatedDto(username, email string) *UserCreatedDto {
 	return &UserCreatedDto{username, email}
 }
 
-func (s *UserService) CreateUser(ctx context.Context, username, email, passwordHash string) (*UserCreatedDto, error) {
-	userExists, err := s.queries.UserExistsByEmail(ctx, email)
-	if err != nil {
-		// Todo log error
-		return nil, err
-	}
-	if userExists {
-		return nil, errors.New("user already exists")
+func (s *UserService) GetUserByEmail(ctx context.Context, email string) (*UserDto, error) {
+	user, err := s.queries.GetUserByEmail(ctx, email)
+
+	if errors.Is(err, sql.ErrNoRows) {
+		return &UserDto{}, nil
 	}
 
+	return NewUserDto(user), err
+}
+
+func (s *UserService) UserExistsByEmail(ctx context.Context, email string) (bool, error) {
+	return s.queries.UserExistsByEmail(ctx, email)
+}
+
+func (s *UserService) CreateUser(ctx context.Context, username, email, hashedPassword string) (*UserCreatedDto, error) {
 	user, err := s.queries.CreateUser(
 		ctx,
 		repository.CreateUserParams{
 			Username:     username,
 			Email:        email,
-			PasswordHash: passwordHash,
+			PasswordHash: hashedPassword,
 		},
 	)
 	if err != nil {

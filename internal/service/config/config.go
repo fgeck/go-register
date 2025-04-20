@@ -17,14 +17,6 @@ package main
 // 	Argon2Config  Argon2Config
 // }
 
-// type Argon2Config struct {
-// 	Memory      uint32
-// 	Iterations  uint32
-// 	Parallelism uint8
-// 	SaltLength  uint32
-// 	KeyLength   uint32
-// }
-
 // func loadConfig() *Config {
 // 	return &Config{
 // 		ServerAddress: getEnv("SERVER_ADDRESS", ":8080"),

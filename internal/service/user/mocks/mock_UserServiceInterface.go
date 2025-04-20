@@ -7,7 +7,7 @@ package user
 import (
 	"context"
 
-	"github.com/fgeck/go-register/internal/repository"
+	"github.com/fgeck/go-register/internal/service/user"
 	mock "github.com/stretchr/testify/mock"
 )
 
@@ -39,22 +39,24 @@ func (_m *MockUserServiceInterface) EXPECT() *MockUserServiceInterface_Expecter 
 }
 
 // CreateUser provides a mock function for the type MockUserServiceInterface
-func (_mock *MockUserServiceInterface) CreateUser(ctx context.Context, username string, email string, passwordHash string) (repository.User, error) {
+func (_mock *MockUserServiceInterface) CreateUser(ctx context.Context, username string, email string, passwordHash string) (*user.UserCreatedDto, error) {
 	ret := _mock.Called(ctx, username, email, passwordHash)
 
 	if len(ret) == 0 {
 		panic("no return value specified for CreateUser")
 	}
 
-	var r0 repository.User
+	var r0 *user.UserCreatedDto
 	var r1 error
-	if returnFunc, ok := ret.Get(0).(func(context.Context, string, string, string) (repository.User, error)); ok {
+	if returnFunc, ok := ret.Get(0).(func(context.Context, string, string, string) (*user.UserCreatedDto, error)); ok {
 		return returnFunc(ctx, username, email, passwordHash)
 	}
-	if returnFunc, ok := ret.Get(0).(func(context.Context, string, string, string) repository.User); ok {
+	if returnFunc, ok := ret.Get(0).(func(context.Context, string, string, string) *user.UserCreatedDto); ok {
 		r0 = returnFunc(ctx, username, email, passwordHash)
 	} else {
-		r0 = ret.Get(0).(repository.User)
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*user.UserCreatedDto)
+		}
 	}
 	if returnFunc, ok := ret.Get(1).(func(context.Context, string, string, string) error); ok {
 		r1 = returnFunc(ctx, username, email, passwordHash)
@@ -85,12 +87,124 @@ func (_c *MockUserServiceInterface_CreateUser_Call) Run(run func(ctx context.Con
 	return _c
 }
 
-func (_c *MockUserServiceInterface_CreateUser_Call) Return(user repository.User, err error) *MockUserServiceInterface_CreateUser_Call {
-	_c.Call.Return(user, err)
+func (_c *MockUserServiceInterface_CreateUser_Call) Return(userCreatedDto *user.UserCreatedDto, err error) *MockUserServiceInterface_CreateUser_Call {
+	_c.Call.Return(userCreatedDto, err)
 	return _c
 }
 
-func (_c *MockUserServiceInterface_CreateUser_Call) RunAndReturn(run func(ctx context.Context, username string, email string, passwordHash string) (repository.User, error)) *MockUserServiceInterface_CreateUser_Call {
+func (_c *MockUserServiceInterface_CreateUser_Call) RunAndReturn(run func(ctx context.Context, username string, email string, passwordHash string) (*user.UserCreatedDto, error)) *MockUserServiceInterface_CreateUser_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// GetUserByEmail provides a mock function for the type MockUserServiceInterface
+func (_mock *MockUserServiceInterface) GetUserByEmail(ctx context.Context, email string) (*user.UserDto, error) {
+	ret := _mock.Called(ctx, email)
+
+	if len(ret) == 0 {
+		panic("no return value specified for GetUserByEmail")
+	}
+
+	var r0 *user.UserDto
+	var r1 error
+	if returnFunc, ok := ret.Get(0).(func(context.Context, string) (*user.UserDto, error)); ok {
+		return returnFunc(ctx, email)
+	}
+	if returnFunc, ok := ret.Get(0).(func(context.Context, string) *user.UserDto); ok {
+		r0 = returnFunc(ctx, email)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*user.UserDto)
+		}
+	}
+	if returnFunc, ok := ret.Get(1).(func(context.Context, string) error); ok {
+		r1 = returnFunc(ctx, email)
+	} else {
+		r1 = ret.Error(1)
+	}
+	return r0, r1
+}
+
+// MockUserServiceInterface_GetUserByEmail_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'GetUserByEmail'
+type MockUserServiceInterface_GetUserByEmail_Call struct {
+	*mock.Call
+}
+
+// GetUserByEmail is a helper method to define mock.On call
+//   - ctx
+//   - email
+func (_e *MockUserServiceInterface_Expecter) GetUserByEmail(ctx interface{}, email interface{}) *MockUserServiceInterface_GetUserByEmail_Call {
+	return &MockUserServiceInterface_GetUserByEmail_Call{Call: _e.mock.On("GetUserByEmail", ctx, email)}
+}
+
+func (_c *MockUserServiceInterface_GetUserByEmail_Call) Run(run func(ctx context.Context, email string)) *MockUserServiceInterface_GetUserByEmail_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(context.Context), args[1].(string))
+	})
+	return _c
+}
+
+func (_c *MockUserServiceInterface_GetUserByEmail_Call) Return(userDto *user.UserDto, err error) *MockUserServiceInterface_GetUserByEmail_Call {
+	_c.Call.Return(userDto, err)
+	return _c
+}
+
+func (_c *MockUserServiceInterface_GetUserByEmail_Call) RunAndReturn(run func(ctx context.Context, email string) (*user.UserDto, error)) *MockUserServiceInterface_GetUserByEmail_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// UserExistsByEmail provides a mock function for the type MockUserServiceInterface
+func (_mock *MockUserServiceInterface) UserExistsByEmail(ctx context.Context, email string) (bool, error) {
+	ret := _mock.Called(ctx, email)
+
+	if len(ret) == 0 {
+		panic("no return value specified for UserExistsByEmail")
+	}
+
+	var r0 bool
+	var r1 error
+	if returnFunc, ok := ret.Get(0).(func(context.Context, string) (bool, error)); ok {
+		return returnFunc(ctx, email)
+	}
+	if returnFunc, ok := ret.Get(0).(func(context.Context, string) bool); ok {
+		r0 = returnFunc(ctx, email)
+	} else {
+		r0 = ret.Get(0).(bool)
+	}
+	if returnFunc, ok := ret.Get(1).(func(context.Context, string) error); ok {
+		r1 = returnFunc(ctx, email)
+	} else {
+		r1 = ret.Error(1)
+	}
+	return r0, r1
+}
+
+// MockUserServiceInterface_UserExistsByEmail_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'UserExistsByEmail'
+type MockUserServiceInterface_UserExistsByEmail_Call struct {
+	*mock.Call
+}
+
+// UserExistsByEmail is a helper method to define mock.On call
+//   - ctx
+//   - email
+func (_e *MockUserServiceInterface_Expecter) UserExistsByEmail(ctx interface{}, email interface{}) *MockUserServiceInterface_UserExistsByEmail_Call {
+	return &MockUserServiceInterface_UserExistsByEmail_Call{Call: _e.mock.On("UserExistsByEmail", ctx, email)}
+}
+
+func (_c *MockUserServiceInterface_UserExistsByEmail_Call) Run(run func(ctx context.Context, email string)) *MockUserServiceInterface_UserExistsByEmail_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(context.Context), args[1].(string))
+	})
+	return _c
+}
+
+func (_c *MockUserServiceInterface_UserExistsByEmail_Call) Return(b bool, err error) *MockUserServiceInterface_UserExistsByEmail_Call {
+	_c.Call.Return(b, err)
+	return _c
+}
+
+func (_c *MockUserServiceInterface_UserExistsByEmail_Call) RunAndReturn(run func(ctx context.Context, email string) (bool, error)) *MockUserServiceInterface_UserExistsByEmail_Call {
 	_c.Call.Return(run)
 	return _c
 }

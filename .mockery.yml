@@ -14,7 +14,13 @@ packages:
   github.com/fgeck/go-register/internal/repository:
     config:
       all: true
-  github.com/fgeck/go-register/internal/service/password:
+  github.com/fgeck/go-register/internal/service/loginRegister:
+    config:
+      all: true
+  github.com/fgeck/go-register/internal/service/security/jwt:
+    config:
+      all: true
+  github.com/fgeck/go-register/internal/service/security/password:
     config:
       all: true
   github.com/fgeck/go-register/internal/service/user:

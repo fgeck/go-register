@@ -94,57 +94,93 @@ func (_c *MockQuerier_CreateUser_Call) RunAndReturn(run func(ctx context.Context
 	return _c
 }
 
-// GetUser provides a mock function for the type MockQuerier
-func (_mock *MockQuerier) GetUser(ctx context.Context, id pgtype.UUID) (repository.User, error) {
+// DeleteUser provides a mock function for the type MockQuerier
+func (_mock *MockQuerier) DeleteUser(ctx context.Context, id pgtype.UUID) error {
 	ret := _mock.Called(ctx, id)
 
 	if len(ret) == 0 {
-		panic("no return value specified for GetUser")
+		panic("no return value specified for DeleteUser")
 	}
 
-	var r0 repository.User
-	var r1 error
-	if returnFunc, ok := ret.Get(0).(func(context.Context, pgtype.UUID) (repository.User, error)); ok {
-		return returnFunc(ctx, id)
-	}
-	if returnFunc, ok := ret.Get(0).(func(context.Context, pgtype.UUID) repository.User); ok {
+	var r0 error
+	if returnFunc, ok := ret.Get(0).(func(context.Context, pgtype.UUID) error); ok {
 		r0 = returnFunc(ctx, id)
 	} else {
-		r0 = ret.Get(0).(repository.User)
+		r0 = ret.Error(0)
 	}
-	if returnFunc, ok := ret.Get(1).(func(context.Context, pgtype.UUID) error); ok {
-		r1 = returnFunc(ctx, id)
-	} else {
-		r1 = ret.Error(1)
-	}
-	return r0, r1
+	return r0
 }
 
-// MockQuerier_GetUser_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'GetUser'
-type MockQuerier_GetUser_Call struct {
+// MockQuerier_DeleteUser_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'DeleteUser'
+type MockQuerier_DeleteUser_Call struct {
 	*mock.Call
 }
 
-// GetUser is a helper method to define mock.On call
+// DeleteUser is a helper method to define mock.On call
 //   - ctx
 //   - id
-func (_e *MockQuerier_Expecter) GetUser(ctx interface{}, id interface{}) *MockQuerier_GetUser_Call {
-	return &MockQuerier_GetUser_Call{Call: _e.mock.On("GetUser", ctx, id)}
+func (_e *MockQuerier_Expecter) DeleteUser(ctx interface{}, id interface{}) *MockQuerier_DeleteUser_Call {
+	return &MockQuerier_DeleteUser_Call{Call: _e.mock.On("DeleteUser", ctx, id)}
 }
 
-func (_c *MockQuerier_GetUser_Call) Run(run func(ctx context.Context, id pgtype.UUID)) *MockQuerier_GetUser_Call {
+func (_c *MockQuerier_DeleteUser_Call) Run(run func(ctx context.Context, id pgtype.UUID)) *MockQuerier_DeleteUser_Call {
 	_c.Call.Run(func(args mock.Arguments) {
 		run(args[0].(context.Context), args[1].(pgtype.UUID))
 	})
 	return _c
 }
 
-func (_c *MockQuerier_GetUser_Call) Return(user repository.User, err error) *MockQuerier_GetUser_Call {
-	_c.Call.Return(user, err)
+func (_c *MockQuerier_DeleteUser_Call) Return(err error) *MockQuerier_DeleteUser_Call {
+	_c.Call.Return(err)
 	return _c
 }
 
-func (_c *MockQuerier_GetUser_Call) RunAndReturn(run func(ctx context.Context, id pgtype.UUID) (repository.User, error)) *MockQuerier_GetUser_Call {
+func (_c *MockQuerier_DeleteUser_Call) RunAndReturn(run func(ctx context.Context, id pgtype.UUID) error) *MockQuerier_DeleteUser_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// DropAllUsers provides a mock function for the type MockQuerier
+func (_mock *MockQuerier) DropAllUsers(ctx context.Context) error {
+	ret := _mock.Called(ctx)
+
+	if len(ret) == 0 {
+		panic("no return value specified for DropAllUsers")
+	}
+
+	var r0 error
+	if returnFunc, ok := ret.Get(0).(func(context.Context) error); ok {
+		r0 = returnFunc(ctx)
+	} else {
+		r0 = ret.Error(0)
+	}
+	return r0
+}
+
+// MockQuerier_DropAllUsers_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'DropAllUsers'
+type MockQuerier_DropAllUsers_Call struct {
+	*mock.Call
+}
+
+// DropAllUsers is a helper method to define mock.On call
+//   - ctx
+func (_e *MockQuerier_Expecter) DropAllUsers(ctx interface{}) *MockQuerier_DropAllUsers_Call {
+	return &MockQuerier_DropAllUsers_Call{Call: _e.mock.On("DropAllUsers", ctx)}
+}
+
+func (_c *MockQuerier_DropAllUsers_Call) Run(run func(ctx context.Context)) *MockQuerier_DropAllUsers_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(context.Context))
+	})
+	return _c
+}
+
+func (_c *MockQuerier_DropAllUsers_Call) Return(err error) *MockQuerier_DropAllUsers_Call {
+	_c.Call.Return(err)
+	return _c
+}
+
+func (_c *MockQuerier_DropAllUsers_Call) RunAndReturn(run func(ctx context.Context) error) *MockQuerier_DropAllUsers_Call {
 	_c.Call.Return(run)
 	return _c
 }
@@ -200,6 +236,116 @@ func (_c *MockQuerier_GetUserByEmail_Call) Return(user repository.User, err erro
 }
 
 func (_c *MockQuerier_GetUserByEmail_Call) RunAndReturn(run func(ctx context.Context, email string) (repository.User, error)) *MockQuerier_GetUserByEmail_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// GetUserById provides a mock function for the type MockQuerier
+func (_mock *MockQuerier) GetUserById(ctx context.Context, id pgtype.UUID) (repository.User, error) {
+	ret := _mock.Called(ctx, id)
+
+	if len(ret) == 0 {
+		panic("no return value specified for GetUserById")
+	}
+
+	var r0 repository.User
+	var r1 error
+	if returnFunc, ok := ret.Get(0).(func(context.Context, pgtype.UUID) (repository.User, error)); ok {
+		return returnFunc(ctx, id)
+	}
+	if returnFunc, ok := ret.Get(0).(func(context.Context, pgtype.UUID) repository.User); ok {
+		r0 = returnFunc(ctx, id)
+	} else {
+		r0 = ret.Get(0).(repository.User)
+	}
+	if returnFunc, ok := ret.Get(1).(func(context.Context, pgtype.UUID) error); ok {
+		r1 = returnFunc(ctx, id)
+	} else {
+		r1 = ret.Error(1)
+	}
+	return r0, r1
+}
+
+// MockQuerier_GetUserById_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'GetUserById'
+type MockQuerier_GetUserById_Call struct {
+	*mock.Call
+}
+
+// GetUserById is a helper method to define mock.On call
+//   - ctx
+//   - id
+func (_e *MockQuerier_Expecter) GetUserById(ctx interface{}, id interface{}) *MockQuerier_GetUserById_Call {
+	return &MockQuerier_GetUserById_Call{Call: _e.mock.On("GetUserById", ctx, id)}
+}
+
+func (_c *MockQuerier_GetUserById_Call) Run(run func(ctx context.Context, id pgtype.UUID)) *MockQuerier_GetUserById_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(context.Context), args[1].(pgtype.UUID))
+	})
+	return _c
+}
+
+func (_c *MockQuerier_GetUserById_Call) Return(user repository.User, err error) *MockQuerier_GetUserById_Call {
+	_c.Call.Return(user, err)
+	return _c
+}
+
+func (_c *MockQuerier_GetUserById_Call) RunAndReturn(run func(ctx context.Context, id pgtype.UUID) (repository.User, error)) *MockQuerier_GetUserById_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// UpdateUser provides a mock function for the type MockQuerier
+func (_mock *MockQuerier) UpdateUser(ctx context.Context, arg repository.UpdateUserParams) (repository.User, error) {
+	ret := _mock.Called(ctx, arg)
+
+	if len(ret) == 0 {
+		panic("no return value specified for UpdateUser")
+	}
+
+	var r0 repository.User
+	var r1 error
+	if returnFunc, ok := ret.Get(0).(func(context.Context, repository.UpdateUserParams) (repository.User, error)); ok {
+		return returnFunc(ctx, arg)
+	}
+	if returnFunc, ok := ret.Get(0).(func(context.Context, repository.UpdateUserParams) repository.User); ok {
+		r0 = returnFunc(ctx, arg)
+	} else {
+		r0 = ret.Get(0).(repository.User)
+	}
+	if returnFunc, ok := ret.Get(1).(func(context.Context, repository.UpdateUserParams) error); ok {
+		r1 = returnFunc(ctx, arg)
+	} else {
+		r1 = ret.Error(1)
+	}
+	return r0, r1
+}
+
+// MockQuerier_UpdateUser_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'UpdateUser'
+type MockQuerier_UpdateUser_Call struct {
+	*mock.Call
+}
+
+// UpdateUser is a helper method to define mock.On call
+//   - ctx
+//   - arg
+func (_e *MockQuerier_Expecter) UpdateUser(ctx interface{}, arg interface{}) *MockQuerier_UpdateUser_Call {
+	return &MockQuerier_UpdateUser_Call{Call: _e.mock.On("UpdateUser", ctx, arg)}
+}
+
+func (_c *MockQuerier_UpdateUser_Call) Run(run func(ctx context.Context, arg repository.UpdateUserParams)) *MockQuerier_UpdateUser_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(context.Context), args[1].(repository.UpdateUserParams))
+	})
+	return _c
+}
+
+func (_c *MockQuerier_UpdateUser_Call) Return(user repository.User, err error) *MockQuerier_UpdateUser_Call {
+	_c.Call.Return(user, err)
+	return _c
+}
+
+func (_c *MockQuerier_UpdateUser_Call) RunAndReturn(run func(ctx context.Context, arg repository.UpdateUserParams) (repository.User, error)) *MockQuerier_UpdateUser_Call {
 	_c.Call.Return(run)
 	return _c
 }

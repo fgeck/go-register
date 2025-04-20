@@ -3,19 +3,20 @@ package handlers
 import (
 	"net/http"
 
+	"github.com/fgeck/go-register/internal/service/loginRegister"
 	"github.com/fgeck/go-register/internal/service/render"
-	"github.com/fgeck/go-register/internal/service/user"
+	userfacing_errors "github.com/fgeck/go-register/internal/service/errors"
 	"github.com/fgeck/go-register/templates/views"
 	echo "github.com/labstack/echo/v4"
 )
 
 type RegisterHandler struct {
-	userService *user.UserService
+	loginRegisterService loginRegister.LoginRegisterServiceInterface
 }
 
-func NewRegisterHandler(userService *user.UserService) *RegisterHandler {
+func NewRegisterHandler(loginRegisterService loginRegister.LoginRegisterServiceInterface) *RegisterHandler {
 	return &RegisterHandler{
-		userService: userService,
+		loginRegisterService: loginRegisterService,
 	}
 }
 
@@ -28,13 +29,13 @@ func (r *RegisterHandler) RegisterUserHandler(c echo.Context) error {
 	email := c.FormValue("email")
 	password := c.FormValue("password")
 
-	if err := r.userService.ValidateCreateUserParams(username, email, password); err != nil {
-		return c.String(http.StatusBadRequest, err.Error())
-	}
-	userCreatedDto, err := r.userService.CreateUser(c.Request().Context(), username, email, password)
+	user, err := r.loginRegisterService.RegisterUser(c.Request().Context(), username, email, password)
 	if err != nil {
-		return c.String(http.StatusInternalServerError, "Failed to create user")
+		if userfacingErr, ok := err.(*userfacing_errors.UserFacingError); ok {
+			return c.JSON(userfacingErr.Code, map[string]string{"error": userfacingErr.Error()})
+		}
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to register user"})
 	}
-	return c.JSON(http.StatusOK, userCreatedDto)
 
+	return c.JSON(http.StatusOK, map[string]interface{}{"user": user})
 }
