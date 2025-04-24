@@ -66,6 +66,7 @@ func main() {
 
 func connectToDatabase(ctx context.Context, cfg *config.Config) *repository.Queries {
 	pgxConfig, err := pgxpool.ParseConfig(
+		//nolint:nosprintfhostport
 		fmt.Sprintf(
 			"postgres://%s@%s:%s/%s?sslmode=disable",
 			net.JoinHostPort(cfg.Db.User, cfg.Db.Host),
