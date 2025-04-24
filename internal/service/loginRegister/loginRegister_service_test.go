@@ -5,7 +5,6 @@ package loginRegister_test
 import (
 	"context"
 	"errors"
-	"net/http"
 	"testing"
 
 	"github.com/google/uuid"
@@ -86,7 +85,7 @@ func TestLoginUser(t *testing.T) {
 
 		assert.Error(t, err)
 		assert.Empty(t, result)
-		assert.Equal(t, "InternalError: invalid password (Code: 401)", err.Error())
+		assert.Equal(t, "InternalError: invalid password", err.Error())
 
 		mockUserService.AssertExpectations(t)
 		mockPasswordService.AssertExpectations(t)
@@ -136,7 +135,6 @@ func TestRegisterUser(t *testing.T) {
 		ufe, ok := err.(*customErrors.UserFacingError)
 		assert.True(t, ok, "expected a UserFacingError")
 		assert.Equal(t, "user already exists", ufe.Message)
-		assert.Equal(t, http.StatusConflict, ufe.Code)
 
 		mockUserService.AssertExpectations(t)
 	})
@@ -145,7 +143,7 @@ func TestRegisterUser(t *testing.T) {
 		mockUserService, _, _, service := setupLoginRegisterServiceTest(t)
 
 		mockUserService.On("UserExistsByEmail", ctx, email).Return(false, nil)
-		mockUserService.On("ValidateCreateUserParams", username, email, password).Return(customErrors.NewUserFacing("invalid input", http.StatusBadRequest))
+		mockUserService.On("ValidateCreateUserParams", username, email, password).Return(customErrors.NewUserFacing("invalid input"))
 
 		result, err := service.RegisterUser(ctx, username, email, password)
 
@@ -155,8 +153,7 @@ func TestRegisterUser(t *testing.T) {
 		// Check for UserFacingError
 		ufe, ok := err.(*customErrors.UserFacingError)
 		assert.True(t, ok, "expected a UserFacingError")
-		assert.Equal(t, "invalid input", ufe.Message)
-		assert.Equal(t, http.StatusBadRequest, ufe.Code)
+		assert.Equal(t, "failed to validate create user parameters: invalid input", ufe.Message)
 
 		mockUserService.AssertExpectations(t)
 	})
@@ -172,7 +169,7 @@ func TestRegisterUser(t *testing.T) {
 
 		assert.Error(t, err)
 		assert.Nil(t, result)
-		assert.Equal(t, "hashing error", err.Error())
+		assert.Equal(t, "failed to salt and hash password: hashing error", err.Error())
 
 		mockUserService.AssertExpectations(t)
 		mockPasswordService.AssertExpectations(t)

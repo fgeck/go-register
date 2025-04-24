@@ -39,7 +39,7 @@ func (r *RegisterHandler) RegisterUserHandler(ctx echo.Context) error {
 	if err != nil {
 		var userfacingErr *customErrors.UserFacingError
 		if errors.As(err, &userfacingErr) {
-			jsonErr := ctx.JSON(userfacingErr.Code, map[string]string{"error": userfacingErr.Error()})
+			jsonErr := ctx.JSON(http.StatusBadRequest, map[string]string{"error": userfacingErr.Error()})
 			if jsonErr != nil {
 				return fmt.Errorf("failed to send error response: %w", jsonErr)
 			}

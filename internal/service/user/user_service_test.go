@@ -83,7 +83,7 @@ func TestValidateCreateUserParams(t *testing.T) {
 
 	t.Run("fails when email validation fails", func(t *testing.T) {
 		_, mockValidator, userService := setupUserServiceTest(t)
-		mockValidator.On("ValidateEmail", email).Return(userfacing_errors.NewUserFacing("invalid email format", 400))
+		mockValidator.On("ValidateEmail", email).Return(userfacing_errors.NewUserFacing("invalid email format"))
 
 		err := userService.ValidateCreateUserParams(username, email, password)
 
@@ -93,7 +93,6 @@ func TestValidateCreateUserParams(t *testing.T) {
 		ufe, ok := err.(*userfacing_errors.UserFacingError)
 		assert.True(t, ok, "expected a UserFacingError")
 		assert.Equal(t, "invalid email format", ufe.Message)
-		assert.Equal(t, 400, ufe.Code)
 
 		mockValidator.AssertExpectations(t)
 	})
@@ -101,7 +100,7 @@ func TestValidateCreateUserParams(t *testing.T) {
 	t.Run("fails when password validation fails", func(t *testing.T) {
 		_, mockValidator, userService := setupUserServiceTest(t)
 		mockValidator.On("ValidateEmail", email).Return(nil)
-		mockValidator.On("ValidatePassword", password).Return(userfacing_errors.NewUserFacing("password too weak", 400))
+		mockValidator.On("ValidatePassword", password).Return(userfacing_errors.NewUserFacing("password too weak"))
 
 		err := userService.ValidateCreateUserParams(username, email, password)
 
@@ -111,7 +110,6 @@ func TestValidateCreateUserParams(t *testing.T) {
 		ufe, ok := err.(*userfacing_errors.UserFacingError)
 		assert.True(t, ok, "expected a UserFacingError")
 		assert.Equal(t, "password too weak", ufe.Message)
-		assert.Equal(t, 400, ufe.Code)
 
 		mockValidator.AssertExpectations(t)
 	})
@@ -120,7 +118,7 @@ func TestValidateCreateUserParams(t *testing.T) {
 		_, mockValidator, userService := setupUserServiceTest(t)
 		mockValidator.On("ValidateEmail", email).Return(nil)
 		mockValidator.On("ValidatePassword", password).Return(nil)
-		mockValidator.On("ValidateUsername", username).Return(userfacing_errors.NewUserFacing("username too short", 400))
+		mockValidator.On("ValidateUsername", username).Return(userfacing_errors.NewUserFacing("username too short"))
 
 		err := userService.ValidateCreateUserParams(username, email, password)
 
@@ -130,7 +128,6 @@ func TestValidateCreateUserParams(t *testing.T) {
 		ufe, ok := err.(*userfacing_errors.UserFacingError)
 		assert.True(t, ok, "expected a UserFacingError")
 		assert.Equal(t, "username too short", ufe.Message)
-		assert.Equal(t, 400, ufe.Code)
 
 		mockValidator.AssertExpectations(t)
 	})
@@ -200,16 +197,15 @@ func TestGetUserByEmail(t *testing.T) {
 		mockQueries.AssertExpectations(t)
 	})
 
-	t.Run("returns empty user when no rows found", func(t *testing.T) {
+	t.Run("returns nil when no rows found", func(t *testing.T) {
 		mockQueries, _, userService := setupUserServiceTest(t)
 		mockQueries.On("GetUserByEmail", ctx, email).Return(repository.User{}, sql.ErrNoRows)
 
 		userDto, err := userService.GetUserByEmail(ctx, email)
 
-		assert.NoError(t, err)
-		assert.NotNil(t, userDto)
-		assert.Equal(t, "", userDto.Username)
-		assert.Equal(t, "", userDto.Email)
+		assert.Error(t, err)
+		assert.Nil(t, userDto)
+		assert.Equal(t, err, user.ErrUserNotFound)
 
 		mockQueries.AssertExpectations(t)
 	})

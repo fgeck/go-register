@@ -3,7 +3,6 @@ package loginRegister
 import (
 	"context"
 	"fmt"
-	"net/http"
 
 	customErrors "github.com/fgeck/go-register/internal/service/errors"
 	"github.com/fgeck/go-register/internal/service/security/jwt"
@@ -56,14 +55,11 @@ func (s *LoginRegisterService) RegisterUser(
 	}
 
 	if userExists {
-		return nil, customErrors.NewUserFacing("user already exists", http.StatusConflict)
+		return nil, customErrors.NewUserFacing("user already exists")
 	}
 
 	if err := s.userService.ValidateCreateUserParams(username, email, password); err != nil {
-		return nil, customErrors.NewUserFacing(
-			"failed to validate create user parameters: "+err.Error(),
-			http.StatusBadRequest,
-		)
+		return nil, customErrors.NewUserFacing("failed to validate create user parameters: " + err.Error())
 	}
 
 	hashedPassword, err := s.passwordService.HashAndSaltPassword(password)
