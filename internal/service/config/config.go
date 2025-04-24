@@ -18,6 +18,7 @@ type DbConfig struct {
 	Port     string `mapstructure:"port"`
 	User     string `mapstructure:"user"`
 	Password string `mapstructure:"password"`
+	Database string `mapstructure:"database"`
 }
 
 type Config struct {
@@ -33,7 +34,7 @@ type ConfigLoader struct {
 	viper *viper.Viper
 }
 
-func NewConfigLoader() *ConfigLoader {
+func NewLoader() *ConfigLoader {
 	return &ConfigLoader{
 		viper: viper.New(),
 	}
@@ -43,7 +44,7 @@ func (c *ConfigLoader) LoadConfig(configPath string) (*Config, error) {
 	c.viper.SetConfigName("config")
 	c.viper.SetConfigType("yaml")
 	c.viper.AddConfigPath(".")
-	c.viper.AddConfigPath("./config")
+	c.viper.AddConfigPath("./cmd/web")
 	c.viper.AddConfigPath(configPath)
 
 	// Enable automatic environment variable binding

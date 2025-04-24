@@ -1,3 +1,5 @@
+//go:build unittest
+
 package config_test
 
 import (
@@ -29,7 +31,7 @@ func createTempConfigFile(content string) (string, error) {
 func TestLoadConfig(t *testing.T) {
 	validConfig := `
 app:
-  host: $localhost
+  host: localhost
   port: 8080
   jwtSecret: change-m3-@$ap!
 db:
@@ -40,13 +42,11 @@ db:
 `
 
 	t.Run("successfully loads valid config", func(t *testing.T) {
-		// Create a temporary config file
 		configFile, err := createTempConfigFile(validConfig)
 		assert.NoError(t, err)
 		configPath := filepath.Dir(configFile)
 		defer os.Remove(configPath)
 
-		// Set environment variables for testing
 		os.Setenv("APP_HOST", "127.0.0.1")
 		os.Setenv("APP_PORT", "9090")
 		os.Setenv("DB_USER", "testuser")
@@ -57,7 +57,7 @@ db:
 		defer os.Unsetenv("DB_PASSWORD")
 
 		// Load the config
-		loader := config.NewConfigLoader()
+		loader := config.NewLoader()
 		config, err := loader.LoadConfig(configPath)
 
 		// Validate the results
@@ -72,7 +72,7 @@ db:
 	})
 
 	t.Run("fails when config file is missing", func(t *testing.T) {
-		loader := config.NewConfigLoader()
+		loader := config.NewLoader()
 		config, err := loader.LoadConfig("nonexistent.yaml")
 
 		assert.Error(t, err)
@@ -92,12 +92,11 @@ db:
   password: password
   invalid_field: true
 `
-		// Create a temporary invalid config file
 		configPath, err := createTempConfigFile(invalidConfig)
 		assert.NoError(t, err)
 		defer os.Remove(configPath)
 
-		loader := config.NewConfigLoader()
+		loader := config.NewLoader()
 		config, err := loader.LoadConfig(configPath)
 
 		assert.Error(t, err)
@@ -105,19 +104,19 @@ db:
 	})
 
 	t.Run("uses default values when environment variables are not set", func(t *testing.T) {
-		// Create a temporary config file
-		configPath, err := createTempConfigFile(validConfig)
+		configFile, err := createTempConfigFile(validConfig)
 		assert.NoError(t, err)
+		configPath := filepath.Dir(configFile)
 		defer os.Remove(configPath)
 
 		// Ensure no environment variables are set
-		os.Unsetenv("HOST")
-		os.Unsetenv("PORT")
+		os.Unsetenv("APP_HOST")
+		os.Unsetenv("APP_PORT")
 		os.Unsetenv("DB_USER")
 		os.Unsetenv("DB_PASSWORD")
 
 		// Load the config
-		loader := config.NewConfigLoader()
+		loader := config.NewLoader()
 		config, err := loader.LoadConfig(configPath)
 
 		// Validate the results

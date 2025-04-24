@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"errors"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -11,6 +12,7 @@ import (
 
 	"github.com/fgeck/go-register/internal/handlers"
 	"github.com/fgeck/go-register/internal/repository"
+	"github.com/fgeck/go-register/internal/service/config"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/labstack/echo/v4"
@@ -23,16 +25,27 @@ const (
 )
 
 func main() {
-	// Load configuration
-	// cfg := loadConfig()
-	port := "8080"
+	cfgLoader := config.NewLoader()
+	cfg, err := cfgLoader.LoadConfig("")
+	if err != nil {
+		panic(err)
+	}
 
 	// Initialize context with timeout for startup operations
 	ctx, cancel := context.WithTimeout(context.Background(), CONTEXT_TIMEOUT)
 	defer cancel()
 
 	// Database setup
-	pgxConfig, err := pgxpool.ParseConfig("postgres://user:password@localhost:5432/postgres?sslmode=disable")
+	pgxConfig, err := pgxpool.ParseConfig(
+		fmt.Sprintf(
+			"postgres://%s:%s@%s:%s/%s?sslmode=disable",
+			cfg.Db.Host,
+			cfg.Db.Port,
+			cfg.Db.User,
+			cfg.Db.Password,
+			cfg.Db.Database,
+		),
+	)
 	if err != nil {
 		panic(err)
 	}
@@ -57,27 +70,20 @@ func main() {
 		os.Exit(1)
 	}
 
-	// Run migrations
-	// if err := runMigrations(cfg.DatabaseURL); err != nil {
-	// 	log.Fatalf("Migrations failed: %v\n", err)
-	// }
-
-	// Initialize repository
 	queries := repository.New(pgxConnPool)
 
-	// Initialize server
 	echoServer := echo.New()
-	// Middleware
 	echoServer.Use(middleware.Logger())
-	// create and use render
 
 	handlers.SetupHandlers(echoServer, queries)
 
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt)
 	defer stop()
+
 	// Start server
 	go func() {
-		if err := echoServer.Start(":" + port); err != nil && !errors.Is(err, http.ErrServerClosed) {
+		err := echoServer.Start(fmt.Sprintf("%s:%s", cfg.App.Host, cfg.App.Port))
+		if err != nil && !errors.Is(err, http.ErrServerClosed) {
 			echoServer.Logger.Fatal("shutting down the server")
 		}
 	}()
