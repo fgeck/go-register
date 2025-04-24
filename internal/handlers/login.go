@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	"net/http"
 
 	loginregister "github.com/fgeck/go-register/internal/service/loginRegister"
@@ -11,9 +12,9 @@ import (
 )
 
 type LoginHandlerInterface interface {
-	LoginRegisterContainerHandler(c echo.Context) error
-	LoginFormHandler(c echo.Context) error
-	LoginHandler(c echo.Context) error
+	LoginRegisterContainerHandler(ctx echo.Context) error
+	LoginFormHandler(ctx echo.Context) error
+	LoginHandler(ctx echo.Context) error
 }
 
 type LoginHandler struct {
@@ -26,21 +27,41 @@ func NewLoginHandler(loginRegisterService loginregister.LoginRegisterServiceInte
 	}
 }
 
-func (h *LoginHandler) LoginRegisterContainerHandler(c echo.Context) error {
-	return render.Render(c, views.LoginRegister())
-}
-
-func (h *LoginHandler) LoginFormHandler(c echo.Context) error {
-	return render.Render(c, views.LoginForm())
-}
-
-func (h *LoginHandler) LoginHandler(c echo.Context) error {
-	username := c.FormValue("username")
-	password := c.FormValue("password")
-
-	token, err := h.loginRegisterService.LoginUser(c.Request().Context(), username, password)
-	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to login user"})
+func (h *LoginHandler) LoginRegisterContainerHandler(ctx echo.Context) error {
+	if err := render.Render(ctx, views.LoginRegister()); err != nil {
+		return fmt.Errorf("failed to render login register container: %w", err)
 	}
-	return c.JSON(http.StatusOK, map[string]string{"token": token})
+
+	return nil
+}
+
+func (h *LoginHandler) LoginFormHandler(ctx echo.Context) error {
+	if err := render.Render(ctx, views.LoginForm()); err != nil {
+		return fmt.Errorf("failed to render login form: %w", err)
+	}
+
+	return nil
+}
+
+func (h *LoginHandler) LoginHandler(ctx echo.Context) error {
+	username := ctx.FormValue("username")
+	password := ctx.FormValue("password")
+
+	token, err := h.loginRegisterService.LoginUser(ctx.Request().Context(), username, password)
+	if err != nil {
+		wrappedErr := fmt.Errorf("failed to login user: %w", err)
+		jsonErr := ctx.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to login user"})
+
+		if jsonErr != nil {
+			return fmt.Errorf("failed to send error response: %w", jsonErr)
+		}
+
+		return wrappedErr
+	}
+
+	if jsonErr := ctx.JSON(http.StatusOK, map[string]string{"token": token}); jsonErr != nil {
+		return fmt.Errorf("failed to send success response: %w", jsonErr)
+	}
+
+	return nil
 }

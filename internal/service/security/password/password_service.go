@@ -18,7 +18,10 @@ func NewPasswordService() *PasswordService {
 		compareFunc: bcrypt.CompareHashAndPassword,
 	}
 }
-func NewPasswordServiceWithCustomFuncs(hashFunc func(password []byte, cost int) ([]byte, error), compareFunc func(hashedPassword, password []byte) error) *PasswordService {
+func NewPasswordServiceWithCustomFuncs(
+	hashFunc func(password []byte, cost int) ([]byte, error),
+	compareFunc func(hashedPassword, password []byte) error,
+) *PasswordService {
 	return &PasswordService{
 		hashFunc:    hashFunc,
 		compareFunc: compareFunc,

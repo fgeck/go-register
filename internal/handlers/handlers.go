@@ -16,7 +16,7 @@ const (
 	TWENTY_FOUR_HOURS_IN_MS = 24 * 1000 * 60 * 60
 )
 
-func SetupHandlers(e *echo.Echo, queries *repository.Queries) {
+func SetupHandlers(echoServer *echo.Echo, queries *repository.Queries) {
 	validator := validation.NewValidationService()
 	userService := user.NewUserService(queries, validator)
 	passwordService := password.NewPasswordService()
@@ -25,11 +25,11 @@ func SetupHandlers(e *echo.Echo, queries *repository.Queries) {
 	registerHandler := NewRegisterHandler(loginRegisterService)
 	loginHandler := NewLoginHandler(loginRegisterService)
 
-	e.Static("/", "public")
-	e.GET("/", HomeHandler)
-	e.GET("/login", loginHandler.LoginRegisterContainerHandler)
-	e.GET("/loginForm", loginHandler.LoginFormHandler)
-	e.GET("/registerForm", registerHandler.RegisterFormHandler)
-	e.POST("/register", registerHandler.RegisterUserHandler)
+	echoServer.Static("/", "public")
+	echoServer.GET("/", HomeHandler)
+	echoServer.GET("/login", loginHandler.LoginRegisterContainerHandler)
+	echoServer.GET("/loginForm", loginHandler.LoginFormHandler)
+	echoServer.GET("/registerForm", registerHandler.RegisterFormHandler)
+	echoServer.POST("/register", registerHandler.RegisterUserHandler)
 	log.Println("All handlers registered")
 }

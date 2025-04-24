@@ -2,9 +2,10 @@ package handlers
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 
-	custom_errors "github.com/fgeck/go-register/internal/service/errors"
+	customErrors "github.com/fgeck/go-register/internal/service/errors"
 	"github.com/fgeck/go-register/internal/service/loginRegister"
 	"github.com/fgeck/go-register/internal/service/render"
 	"github.com/fgeck/go-register/templates/views"
@@ -21,23 +22,33 @@ func NewRegisterHandler(loginRegisterService loginRegister.LoginRegisterServiceI
 	}
 }
 
-func (r *RegisterHandler) RegisterFormHandler(c echo.Context) error {
-	return render.Render(c, views.RegisterForm())
-}
-
-func (r *RegisterHandler) RegisterUserHandler(c echo.Context) error {
-	username := c.FormValue("username")
-	email := c.FormValue("email")
-	password := c.FormValue("password")
-
-	user, err := r.loginRegisterService.RegisterUser(c.Request().Context(), username, email, password)
-	if err != nil {
-		var userfacingErr *custom_errors.UserFacingError
-		if errors.As(err, &userfacingErr) {
-			return c.JSON(userfacingErr.Code, map[string]string{"error": userfacingErr.Error()})
-		}
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to register user"})
+func (r *RegisterHandler) RegisterFormHandler(ctx echo.Context) error {
+	if err := render.Render(ctx, views.RegisterForm()); err != nil {
+		return fmt.Errorf("failed to render register form: %w", err)
 	}
 
-	return c.JSON(http.StatusOK, map[string]interface{}{"user": user})
+	return nil
+}
+
+func (r *RegisterHandler) RegisterUserHandler(ctx echo.Context) error {
+	username := ctx.FormValue("username")
+	email := ctx.FormValue("email")
+	password := ctx.FormValue("password")
+
+	user, err := r.loginRegisterService.RegisterUser(ctx.Request().Context(), username, email, password)
+	if err != nil {
+		var userfacingErr *customErrors.UserFacingError
+		if errors.As(err, &userfacingErr) {
+			jsonErr := ctx.JSON(userfacingErr.Code, map[string]string{"error": userfacingErr.Error()})
+			if jsonErr != nil {
+				return fmt.Errorf("failed to send error response: %w", jsonErr)
+			}
+
+			return nil
+		}
+
+		return ctx.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to register user"})
+	}
+
+	return ctx.JSON(http.StatusOK, map[string]any{"user": user})
 }

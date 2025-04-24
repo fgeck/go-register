@@ -1,4 +1,4 @@
-name: Go CI Pipeline
+name: CI
 
 on:
   pull_request:
@@ -7,7 +7,7 @@ on:
 
 jobs:
   setup:
-    name: Setup and Cache Build Dependencies
+    name: Setup and download dependencies
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
@@ -21,16 +21,8 @@ jobs:
       - name: Download Dependencies
         run: go mod download
 
-      # - name: Cache Go Build Cache
-      #   uses: actions/cache@v4
-      #   with:
-      #     path: ~/.cache/go-build
-      #     key: ${{ runner.os }}-go-build-${{ hashFiles('**/go.sum') }}
-      #     restore-keys: |
-      #       ${{ runner.os }}-go-build-
-
   fmt:
-    name: Verify Formatting
+    name: verify go fmt
     needs: setup
     runs-on: ubuntu-latest
     steps:
@@ -41,22 +33,13 @@ jobs:
         uses: actions/setup-go@v5
         with:
           go-version: 1.24.1
-
-      # - name: Restore Cached Dependencies
-      #   uses: actions/cache@v4
-      #   with:
-      #     path: ~/.cache/go-build
-      #     key: ${{ runner.os }}-go-build-${{ hashFiles('**/go.sum') }}
-      #     restore-keys: |
-      #       ${{ runner.os }}-go-build-
-
       - name: Run go fmt
         run: |
           go fmt ./...
           git diff --exit-code # Fail if files are not formatted
 
   lint:
-    name: Run GolangCI-Lint
+    name: run GolangCI-Lint
     needs: setup
     runs-on: ubuntu-latest
     steps:
@@ -67,22 +50,13 @@ jobs:
         uses: actions/setup-go@v5
         with:
           go-version: 1.24.1
-
-      # - name: Restore Cached Dependencies
-      #   uses: actions/cache@v4
-      #   with:
-      #     path: ~/.cache/go-build
-      #     key: ${{ runner.os }}-go-build-${{ hashFiles('**/go.sum') }}
-      #     restore-keys: |
-      #       ${{ runner.os }}-go-build-
-
       - name: Run GolangCI-Lint
         uses: golangci/golangci-lint-action@v7
         with:
           version: latest
 
   build:
-    name: Build Binaries
+    name: build main.go
     needs: setup
     runs-on: ubuntu-latest
     steps:
@@ -94,25 +68,11 @@ jobs:
         with:
           go-version: 1.24.1
 
-      # - name: Restore Cached Dependencies
-      #   uses: actions/cache@v4
-      #   with:
-      #     path: ~/.cache/go-build
-      #     key: ${{ runner.os }}-go-build-${{ hashFiles('**/go.sum') }}
-      #     restore-keys: |
-      #       ${{ runner.os }}-go-build-
-
       - name: Build Main Binary
         run: go build -o main ./cmd/web/main.go
 
-      - name: Build Unit Test Binary
-        run: go test -c -tags=unittest -o ./unit-tests ./...
-
-      - name: Build Integration Test Binary
-        run: go test -c -tags=integrationtest -o ./integration-tests ./integrationTests/...
-
   unit-tests:
-    name: Run Unit Tests
+    name: run unit-tests
     needs: [fmt, lint, build]
     runs-on: ubuntu-latest
     steps:
@@ -124,11 +84,11 @@ jobs:
         with:
           go-version: 1.24.1
 
-      - name: Execute Unit Test Binary
-        run: ./unit-tests -v
+      - name: Run Unit Tests
+        run: go test -tags=unittest -v ./...
 
   integration-tests:
-    name: Run Integration Tests
+    name: run integration-tests
     needs: [fmt, lint, build, unit-tests]
     runs-on: ubuntu-latest
     steps:
@@ -140,5 +100,5 @@ jobs:
         with:
           go-version: 1.24.1
 
-      - name: Execute Integration Test Binary
-        run: ./integration-tests -v
+      - name: Run Integration Tests
+        run: go test -tags=integrationtest -v ./integrationTests/...

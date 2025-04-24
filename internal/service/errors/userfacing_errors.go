@@ -1,4 +1,4 @@
-package custom_errors
+package customErrors
 
 import "fmt"
 
@@ -7,13 +7,13 @@ type UserFacingError struct {
 	Code    int    `json:"code"`
 }
 
-func (e *UserFacingError) Error() string {
-	return fmt.Sprintf("UserFacingError: %s (Code: %d)", e.Message, e.Code)
-}
-
 func NewUserFacing(message string, code int) *UserFacingError {
 	return &UserFacingError{
 		Message: message,
 		Code:    code,
 	}
+}
+
+func (e *UserFacingError) Error() string {
+	return fmt.Sprintf("UserFacingError: %s (Code: %d)", e.Message, e.Code)
 }

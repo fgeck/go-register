@@ -4,7 +4,7 @@ import (
 	"context"
 	"net/http"
 
-	custom_errors "github.com/fgeck/go-register/internal/service/errors"
+	customErrors "github.com/fgeck/go-register/internal/service/errors"
 	"github.com/fgeck/go-register/internal/service/security/jwt"
 	"github.com/fgeck/go-register/internal/service/security/password"
 	"github.com/fgeck/go-register/internal/service/user"
@@ -21,7 +21,11 @@ type LoginRegisterService struct {
 	jwtService      jwt.JwtServiceInterface
 }
 
-func NewLoginRegisterService(userService user.UserServiceInterface, passwordService password.PasswordServiceInterface, jwtService jwt.JwtServiceInterface) *LoginRegisterService {
+func NewLoginRegisterService(
+	userService user.UserServiceInterface,
+	passwordService password.PasswordServiceInterface,
+	jwtService jwt.JwtServiceInterface,
+) *LoginRegisterService {
 	return &LoginRegisterService{userService: userService, passwordService: passwordService, jwtService: jwtService}
 }
 
@@ -32,34 +36,44 @@ func (s *LoginRegisterService) LoginUser(ctx context.Context, email, password st
 	}
 
 	if err := s.passwordService.ComparePassword(user.PasswordHash, password); err != nil {
-		return "", custom_errors.NewInternal("invalid password", http.StatusUnauthorized)
+		return "", customErrors.NewInternal("invalid password", http.StatusUnauthorized)
 	}
+
 	return s.jwtService.GenerateToken(user.ID)
 }
 
-func (s *LoginRegisterService) RegisterUser(ctx context.Context, username, email, password string) (*user.UserCreatedDto, error) {
+func (s *LoginRegisterService) RegisterUser(
+	ctx context.Context,
+	username string,
+	email string,
+	password string,
+) (*user.UserCreatedDto, error) {
 	userExists, err := s.userService.UserExistsByEmail(ctx, email)
 	if err != nil {
 		// Todo log error
 		return nil, err
 	}
+
 	if userExists {
-		return nil, custom_errors.NewUserFacing("user already exists", http.StatusConflict)
+		return nil, customErrors.NewUserFacing("user already exists", http.StatusConflict)
 	}
+
 	if err := s.userService.ValidateCreateUserParams(username, email, password); err != nil {
 		// Todo log error
 		return nil, err
 	}
+
 	hashedPassword, err := s.passwordService.HashAndSaltPassword(password)
 	if err != nil {
 		// Todo log error
 		return nil, err
 	}
 
-	userCreatedDto, err := s.userService.CreateUser(ctx, username, email, string(hashedPassword))
+	userCreatedDto, err := s.userService.CreateUser(ctx, username, email, hashedPassword)
 	if err != nil {
 		// Todo log error
 		return nil, err
 	}
+
 	return userCreatedDto, nil
 }

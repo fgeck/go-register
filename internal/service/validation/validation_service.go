@@ -6,7 +6,7 @@ import (
 	"regexp"
 	"unicode"
 
-	custom_errors "github.com/fgeck/go-register/internal/service/errors"
+	customErrors "github.com/fgeck/go-register/internal/service/errors"
 )
 
 const (
@@ -32,7 +32,7 @@ func NewValidationService() *ValidationService {
 func (v *ValidationService) ValidateEmail(email string) error {
 	matched, _ := regexp.MatchString(EMAIL_REGEX, email)
 	if !matched {
-		return custom_errors.NewUserFacing("invalid email format", http.StatusBadRequest)
+		return customErrors.NewUserFacing("invalid email format", http.StatusBadRequest)
 	}
 
 	return nil
@@ -59,9 +59,10 @@ func (v *ValidationService) ValidatePassword(password string) error {
 	}
 
 	if !hasMinLen || !hasUpper || !hasLower || !hasNumber || !hasSpecial {
-		return custom_errors.NewUserFacing(
+		return customErrors.NewUserFacing(
 			fmt.Sprintf(
-				"password must be at least %d characters long and include at least 1 uppercase letter, 1 lowercase letter, 1 number, and 1 special character",
+				"password must be at least %d characters long and include at least 1 uppercase letter, "+
+					"1 lowercase letter, 1 number, and 1 special character",
 				PASSWORD_MIN_LENGTH,
 			),
 			http.StatusBadRequest,
@@ -73,12 +74,12 @@ func (v *ValidationService) ValidatePassword(password string) error {
 
 func (v *ValidationService) ValidateUsername(username string) error {
 	if len(username) < USERNAME_MIN_LENGTH || len(username) > USERNAME_MAX_LENGTH {
-		return custom_errors.NewUserFacing("username must be at least 3 characters long", http.StatusBadRequest)
+		return customErrors.NewUserFacing("username must be at least 3 characters long", http.StatusBadRequest)
 	}
 
 	for _, char := range username {
-		if !(unicode.IsLetter(char) || unicode.IsDigit(char)) {
-			return custom_errors.NewUserFacing("username can only contain letters and numbers", http.StatusBadRequest)
+		if !unicode.IsLetter(char) && !unicode.IsDigit(char) {
+			return customErrors.NewUserFacing("username can only contain letters and numbers", http.StatusBadRequest)
 		}
 	}
 
