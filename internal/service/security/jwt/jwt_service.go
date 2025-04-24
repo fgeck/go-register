@@ -1,6 +1,10 @@
 package jwt
 
-import "github.com/google/uuid"
+import (
+	"errors"
+
+	"github.com/google/uuid"
+)
 
 type JwtServiceInterface interface {
 	GenerateToken(userId uuid.UUID) (string, error)
@@ -26,21 +30,23 @@ func NewJwtService(secretKey, issuer string, expiration int64) *JwtService {
 
 func (s *JwtService) GenerateToken(userId uuid.UUID) (string, error) {
 	// Implementation for generating JWT token
-	return "", nil
+	return "", ErrPlaceholder
 }
 func (s *JwtService) ValidateToken(token string) (string, error) {
 	// Implementation for validating JWT token
-	return "", nil
+	return "", ErrPlaceholder
 }
 func (s *JwtService) ParseToken(token string) (string, error) {
 	// Implementation for parsing JWT token
-	return "", nil
+	return "", ErrPlaceholder
 }
 func (s *JwtService) ExtractClaims(token string) (map[string]interface{}, error) {
 	// Implementation for extracting claims from JWT token
-	return nil, nil
+	return nil, ErrPlaceholder
 }
 func (s *JwtService) ExtractUserId(token string) (string, error) {
 	// Implementation for extracting user ID from JWT token
-	return "", nil
+	return "", ErrPlaceholder
 }
+
+var ErrPlaceholder = errors.New("placeholder error")

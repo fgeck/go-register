@@ -34,14 +34,15 @@ type UserDto struct {
 	ID           uuid.UUID `json:"id"`
 	Username     string    `json:"username"`
 	Email        string    `json:"email"`
-	PasswordHash string    `json:"password_hash"`
+	PasswordHash string    `json:"passwordHash"`
 }
 
 func NewUserDto(user repository.User) *UserDto {
 	return &UserDto{
-		ID:       uuid.UUID(user.ID.Bytes),
-		Username: user.Username,
-		Email:    user.Email,
+		ID:           uuid.UUID(user.ID.Bytes),
+		Username:     user.Username,
+		Email:        user.Email,
+		PasswordHash: user.PasswordHash,
 	}
 }
 
@@ -54,11 +55,15 @@ func NewUserCreatedDto(username, email string) *UserCreatedDto {
 	return &UserCreatedDto{username, email}
 }
 
+var (
+	ErrUserNotFound = errors.New("user not found")
+)
+
 func (s *UserService) GetUserByEmail(ctx context.Context, email string) (*UserDto, error) {
 	user, err := s.queries.GetUserByEmail(ctx, email)
 
 	if errors.Is(err, sql.ErrNoRows) {
-		return &UserDto{}, nil
+		return nil, ErrUserNotFound
 	}
 
 	return NewUserDto(user), err
@@ -89,11 +94,14 @@ func (s *UserService) ValidateCreateUserParams(username, email, password string)
 	if err := s.validator.ValidateEmail(email); err != nil {
 		return err
 	}
+
 	if err := s.validator.ValidatePassword(password); err != nil {
 		return err
 	}
+
 	if err := s.validator.ValidateUsername(username); err != nil {
 		return err
 	}
+
 	return nil
 }
