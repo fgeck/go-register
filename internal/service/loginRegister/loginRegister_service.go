@@ -2,10 +2,9 @@ package loginRegister
 
 import (
 	"context"
-	"errors"
 	"net/http"
 
-	userfacing_errors "github.com/fgeck/go-register/internal/service/errors"
+	custom_errors "github.com/fgeck/go-register/internal/service/errors"
 	"github.com/fgeck/go-register/internal/service/security/jwt"
 	"github.com/fgeck/go-register/internal/service/security/password"
 	"github.com/fgeck/go-register/internal/service/user"
@@ -33,7 +32,7 @@ func (s *LoginRegisterService) LoginUser(ctx context.Context, email, password st
 	}
 
 	if err := s.passwordService.ComparePassword(user.PasswordHash, password); err != nil {
-		return "", errors.New("invalid password")
+		return "", custom_errors.NewInternal("invalid password", http.StatusUnauthorized)
 	}
 	return s.jwtService.GenerateToken(user.ID)
 }
@@ -45,7 +44,7 @@ func (s *LoginRegisterService) RegisterUser(ctx context.Context, username, email
 		return nil, err
 	}
 	if userExists {
-		return nil, userfacing_errors.New("user already exists", http.StatusConflict)
+		return nil, custom_errors.NewUserFacing("user already exists", http.StatusConflict)
 	}
 	if err := s.userService.ValidateCreateUserParams(username, email, password); err != nil {
 		// Todo log error

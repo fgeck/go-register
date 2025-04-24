@@ -5,6 +5,8 @@ run:
 
 linters:
   default: all
+  disable:
+    - depguard
   settings:
     gocyclo:
       min-complexity: 15 # Set the threshold for cyclomatic complexity

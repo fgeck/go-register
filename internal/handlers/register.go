@@ -1,9 +1,10 @@
 package handlers
 
 import (
+	"errors"
 	"net/http"
 
-	userfacing_errors "github.com/fgeck/go-register/internal/service/errors"
+	custom_errors "github.com/fgeck/go-register/internal/service/errors"
 	"github.com/fgeck/go-register/internal/service/loginRegister"
 	"github.com/fgeck/go-register/internal/service/render"
 	"github.com/fgeck/go-register/templates/views"
@@ -31,7 +32,8 @@ func (r *RegisterHandler) RegisterUserHandler(c echo.Context) error {
 
 	user, err := r.loginRegisterService.RegisterUser(c.Request().Context(), username, email, password)
 	if err != nil {
-		if userfacingErr, ok := err.(*userfacing_errors.UserFacingError); ok {
+		var userfacingErr *custom_errors.UserFacingError
+		if errors.As(err, &userfacingErr) {
 			return c.JSON(userfacingErr.Code, map[string]string{"error": userfacingErr.Error()})
 		}
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to register user"})

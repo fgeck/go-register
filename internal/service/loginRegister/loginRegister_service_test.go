@@ -10,7 +10,7 @@ import (
 
 	"github.com/google/uuid"
 
-	userfacing_errors "github.com/fgeck/go-register/internal/service/errors"
+	custom_errors "github.com/fgeck/go-register/internal/service/errors"
 	"github.com/fgeck/go-register/internal/service/loginRegister"
 	jwt "github.com/fgeck/go-register/internal/service/security/jwt/mocks"
 	password "github.com/fgeck/go-register/internal/service/security/password/mocks"
@@ -86,7 +86,7 @@ func TestLoginUser(t *testing.T) {
 
 		assert.Error(t, err)
 		assert.Empty(t, result)
-		assert.Equal(t, "invalid password", err.Error())
+		assert.Equal(t, "InternalError: invalid password (Code: 401)", err.Error())
 
 		mockUserService.AssertExpectations(t)
 		mockPasswordService.AssertExpectations(t)
@@ -133,7 +133,7 @@ func TestRegisterUser(t *testing.T) {
 		assert.Nil(t, result)
 
 		// Check for UserFacingError
-		ufe, ok := err.(*userfacing_errors.UserFacingError)
+		ufe, ok := err.(*custom_errors.UserFacingError)
 		assert.True(t, ok, "expected a UserFacingError")
 		assert.Equal(t, "user already exists", ufe.Message)
 		assert.Equal(t, http.StatusConflict, ufe.Code)
@@ -145,7 +145,7 @@ func TestRegisterUser(t *testing.T) {
 		mockUserService, _, _, service := setupLoginRegisterServiceTest(t)
 
 		mockUserService.On("UserExistsByEmail", ctx, email).Return(false, nil)
-		mockUserService.On("ValidateCreateUserParams", username, email, password).Return(userfacing_errors.New("invalid input", http.StatusBadRequest))
+		mockUserService.On("ValidateCreateUserParams", username, email, password).Return(custom_errors.NewUserFacing("invalid input", http.StatusBadRequest))
 
 		result, err := service.RegisterUser(ctx, username, email, password)
 
@@ -153,7 +153,7 @@ func TestRegisterUser(t *testing.T) {
 		assert.Nil(t, result)
 
 		// Check for UserFacingError
-		ufe, ok := err.(*userfacing_errors.UserFacingError)
+		ufe, ok := err.(*custom_errors.UserFacingError)
 		assert.True(t, ok, "expected a UserFacingError")
 		assert.Equal(t, "invalid input", ufe.Message)
 		assert.Equal(t, http.StatusBadRequest, ufe.Code)

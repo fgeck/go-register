@@ -39,9 +39,10 @@ type UserDto struct {
 
 func NewUserDto(user repository.User) *UserDto {
 	return &UserDto{
-		ID:       uuid.UUID(user.ID.Bytes),
-		Username: user.Username,
-		Email:    user.Email,
+		ID:           uuid.UUID(user.ID.Bytes),
+		Username:     user.Username,
+		Email:        user.Email,
+		PasswordHash: user.PasswordHash,
 	}
 }
 
@@ -58,7 +59,7 @@ func (s *UserService) GetUserByEmail(ctx context.Context, email string) (*UserDt
 	user, err := s.queries.GetUserByEmail(ctx, email)
 
 	if errors.Is(err, sql.ErrNoRows) {
-		return &UserDto{}, nil
+		return nil, nil
 	}
 
 	return NewUserDto(user), err

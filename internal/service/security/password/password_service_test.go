@@ -21,13 +21,13 @@ func TestHashPassword(t *testing.T) {
 	service := password.NewPasswordServiceWithCustomFuncs(mockHashFunc, nil)
 
 	t.Run("successfully hashes password", func(t *testing.T) {
-		hashedPassword, err := service.HashPassword("validPassword")
+		hashedPassword, err := service.HashAndSaltPassword("validPassword")
 		assert.NoError(t, err)
 		assert.Equal(t, "mockHashedPassword", hashedPassword)
 	})
 
 	t.Run("fails to hash password", func(t *testing.T) {
-		_, err := service.HashPassword("error")
+		_, err := service.HashAndSaltPassword("error")
 		assert.Error(t, err)
 		assert.Equal(t, "mock hashing error", err.Error())
 	})

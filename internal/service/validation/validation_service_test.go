@@ -18,8 +18,8 @@ func TestValidateEmail(t *testing.T) {
 		expected *userfacing_errors.UserFacingError
 	}{
 		{"valid.email@example.com", nil},
-		{"invalid-email", userfacing_errors.New("invalid email format", 400)},
-		{"", userfacing_errors.New("invalid email format", 400)},
+		{"invalid-email", userfacing_errors.NewUserFacing("invalid email format", 400)},
+		{"", userfacing_errors.NewUserFacing("invalid email format", 400)},
 	}
 
 	for _, test := range tests {
@@ -43,10 +43,10 @@ func TestValidatePassword(t *testing.T) {
 		expected *userfacing_errors.UserFacingError
 	}{
 		{"SuperVal!d1@", nil},
-		{"Valid1@", userfacing_errors.New("password must be at least 8 characters long and include at least 1 uppercase letter, 1 lowercase letter, 1 number, and 1 special character", 400)},
-		{"short", userfacing_errors.New("password must be at least 8 characters long and include at least 1 uppercase letter, 1 lowercase letter, 1 number, and 1 special character", 400)},
-		{"NoSpecialChar1", userfacing_errors.New("password must be at least 8 characters long and include at least 1 uppercase letter, 1 lowercase letter, 1 number, and 1 special character", 400)},
-		{"nouppercase1@", userfacing_errors.New("password must be at least 8 characters long and include at least 1 uppercase letter, 1 lowercase letter, 1 number, and 1 special character", 400)},
+		{"Valid1@", userfacing_errors.NewUserFacing("password must be at least 8 characters long and include at least 1 uppercase letter, 1 lowercase letter, 1 number, and 1 special character", 400)},
+		{"short", userfacing_errors.NewUserFacing("password must be at least 8 characters long and include at least 1 uppercase letter, 1 lowercase letter, 1 number, and 1 special character", 400)},
+		{"NoSpecialChar1", userfacing_errors.NewUserFacing("password must be at least 8 characters long and include at least 1 uppercase letter, 1 lowercase letter, 1 number, and 1 special character", 400)},
+		{"nouppercase1@", userfacing_errors.NewUserFacing("password must be at least 8 characters long and include at least 1 uppercase letter, 1 lowercase letter, 1 number, and 1 special character", 400)},
 	}
 
 	for _, test := range tests {
@@ -71,8 +71,8 @@ func TestValidateUsername(t *testing.T) {
 	}{
 		{"validUser", nil},
 		{"val1dUs3r", nil},
-		{"ab", userfacing_errors.New("username must be at least 3 characters long", 400)},
-		{"invalid_user!", userfacing_errors.New("username can only contain letters and numbers", 400)},
+		{"ab", userfacing_errors.NewUserFacing("username must be at least 3 characters long", 400)},
+		{"invalid_user!", userfacing_errors.NewUserFacing("username can only contain letters and numbers", 400)},
 	}
 
 	for _, test := range tests {

@@ -6,7 +6,7 @@ import (
 	"regexp"
 	"unicode"
 
-	userfacing_errors "github.com/fgeck/go-register/internal/service/errors"
+	custom_errors "github.com/fgeck/go-register/internal/service/errors"
 )
 
 type ValidationServiceInterface interface {
@@ -29,7 +29,7 @@ func (v *ValidationService) ValidateEmail(email string) error {
 	emailRegex := `^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`
 	matched, _ := regexp.MatchString(emailRegex, email)
 	if !matched {
-		return userfacing_errors.New("invalid email format", http.StatusBadRequest)
+		return custom_errors.NewUserFacing("invalid email format", http.StatusBadRequest)
 	}
 	return nil
 }
@@ -55,19 +55,19 @@ func (v *ValidationService) ValidatePassword(password string) error {
 	}
 
 	if !hasMinLen || !hasUpper || !hasLower || !hasNumber || !hasSpecial {
-		return userfacing_errors.New(fmt.Sprintf("password must be at least %d characters long and include at least 1 uppercase letter, 1 lowercase letter, 1 number, and 1 special character", minPasswordLength), http.StatusBadRequest)
+		return custom_errors.NewUserFacing(fmt.Sprintf("password must be at least %d characters long and include at least 1 uppercase letter, 1 lowercase letter, 1 number, and 1 special character", minPasswordLength), http.StatusBadRequest)
 	}
 	return nil
 }
 
 func (v *ValidationService) ValidateUsername(username string) error {
 	if len(username) < 3 {
-		return userfacing_errors.New("username must be at least 3 characters long", http.StatusBadRequest)
+		return custom_errors.NewUserFacing("username must be at least 3 characters long", http.StatusBadRequest)
 	}
 
 	for _, char := range username {
 		if !(unicode.IsLetter(char) || unicode.IsDigit(char)) {
-			return userfacing_errors.New("username can only contain letters and numbers", http.StatusBadRequest)
+			return custom_errors.NewUserFacing("username can only contain letters and numbers", http.StatusBadRequest)
 		}
 	}
 	return nil

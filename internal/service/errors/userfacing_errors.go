@@ -1,4 +1,4 @@
-package userfacing_errors
+package custom_errors
 
 import "fmt"
 
@@ -11,7 +11,7 @@ func (e *UserFacingError) Error() string {
 	return fmt.Sprintf("UserFacingError: %s (Code: %d)", e.Message, e.Code)
 }
 
-func New(message string, code int) *UserFacingError {
+func NewUserFacing(message string, code int) *UserFacingError {
 	return &UserFacingError{
 		Message: message,
 		Code:    code,
