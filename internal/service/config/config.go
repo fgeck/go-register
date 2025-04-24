@@ -56,6 +56,7 @@ func (c *ConfigLoader) LoadConfig(configPath string) (*Config, error) {
 	// Read the config file
 	if err := c.viper.ReadInConfig(); err != nil {
 		log.Printf("Error reading config file: %v", err)
+
 		return nil, err
 	}
 

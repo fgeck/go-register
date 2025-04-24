@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"net"
 	"net/http"
 	"os"
 	"os/signal"
@@ -35,7 +36,35 @@ func main() {
 	ctx, cancel := context.WithTimeout(context.Background(), CONTEXT_TIMEOUT)
 	defer cancel()
 
-	// Database setup
+	queries := connectToDatabase(ctx, cfg)
+
+	echoServer := echo.New()
+	echoServer.Use(middleware.Logger())
+	handlers.SetupHandlers(echoServer, queries)
+
+	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt)
+	defer stop()
+
+	// Start server
+	go func() {
+		err := echoServer.Start(net.JoinHostPort(cfg.App.Host, cfg.App.Port))
+		if err != nil && !errors.Is(err, http.ErrServerClosed) {
+			echoServer.Logger.Fatal("shutting down the server")
+		}
+	}()
+
+	// Wait for interrupt signal to gracefully shut down the server with a timeout of 10 seconds.
+	<-ctx.Done()
+	ctx, cancel = context.WithTimeout(context.Background(), CONTEXT_TIMEOUT)
+
+	defer cancel()
+
+	if err := echoServer.Shutdown(ctx); err != nil {
+		echoServer.Logger.Fatal(err)
+	}
+}
+
+func connectToDatabase(ctx context.Context, cfg *config.Config) *repository.Queries {
 	pgxConfig, err := pgxpool.ParseConfig(
 		fmt.Sprintf(
 			"postgres://%s:%s@%s:%s/%s?sslmode=disable",
@@ -71,30 +100,5 @@ func main() {
 	}
 
 	queries := repository.New(pgxConnPool)
-
-	echoServer := echo.New()
-	echoServer.Use(middleware.Logger())
-
-	handlers.SetupHandlers(echoServer, queries)
-
-	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt)
-	defer stop()
-
-	// Start server
-	go func() {
-		err := echoServer.Start(fmt.Sprintf("%s:%s", cfg.App.Host, cfg.App.Port))
-		if err != nil && !errors.Is(err, http.ErrServerClosed) {
-			echoServer.Logger.Fatal("shutting down the server")
-		}
-	}()
-
-	// Wait for interrupt signal to gracefully shut down the server with a timeout of 10 seconds.
-	<-ctx.Done()
-	ctx, cancel = context.WithTimeout(context.Background(), CONTEXT_TIMEOUT)
-
-	defer cancel()
-
-	if err := echoServer.Shutdown(ctx); err != nil {
-		echoServer.Logger.Fatal(err)
-	}
+	return queries
 }
