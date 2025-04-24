@@ -1,3 +1,5 @@
+// +build unittest
+
 package validation_test
 
 import (

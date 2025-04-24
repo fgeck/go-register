@@ -1,0 +1,35 @@
+version: "2"
+run:
+  timeout: 5m
+  tests: true
+
+linters:
+  default: all
+  enable:
+    - govet
+    - staticcheck
+    - gosimple
+    - unused
+    - deadcode
+    - errcheck
+    - gocyclo
+    - gofmt
+    - goimports
+    - ineffassign
+    - misspell
+    - unparam
+    - structcheck
+    - varcheck
+    - typecheck
+  settings:
+    gocyclo:
+      min-complexity: 15 # Set the threshold for cyclomatic complexity
+    misspell:
+      locale: US # Use US English for spell checking
+
+output:
+  formats:
+    text:
+      print-linter-name: true
+      print-issued-lines: true
+      colors: true
