@@ -1,19 +1,15 @@
 package customErrors
 
-import "fmt"
-
 type InternalError struct {
 	Message string `json:"message"`
-	Code    int    `json:"code"`
 }
 
-func NewInternal(message string, code int) *InternalError {
+func NewInternal(message string) *InternalError {
 	return &InternalError{
 		Message: message,
-		Code:    code,
 	}
 }
 
 func (e *InternalError) Error() string {
-	return fmt.Sprintf("InternalError: %s (Code: %d)", e.Message, e.Code)
+	return "InternalError: " + e.Message
 }

@@ -1,12 +1,10 @@
 package validation
 
 import (
+	"errors"
 	"fmt"
-	"net/http"
 	"regexp"
 	"unicode"
-
-	customErrors "github.com/fgeck/go-register/internal/service/errors"
 )
 
 const (
@@ -15,6 +13,20 @@ const (
 	USERNAME_MAX_LENGTH = 30
 	USERNAME_REGEX      = `^[a-zA-Z0-9]+$`
 	EMAIL_REGEX         = `^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`
+)
+
+var (
+	ErrInvalidEmailFormat = errors.New("invalid email format")
+	ErrInvalidUsername    = fmt.Errorf(
+		"username can only contain letters and numbers and must be between %d and %d characters long",
+		USERNAME_MIN_LENGTH,
+		USERNAME_MAX_LENGTH,
+	)
+	ErrInvalidPassword = fmt.Errorf(
+		"password must be at least %d characters long and include at least 1 uppercase letter, "+
+			"1 lowercase letter, 1 number, and 1 special character",
+		PASSWORD_MIN_LENGTH,
+	)
 )
 
 type ValidationServiceInterface interface {
@@ -32,7 +44,7 @@ func NewValidationService() *ValidationService {
 func (v *ValidationService) ValidateEmail(email string) error {
 	matched, _ := regexp.MatchString(EMAIL_REGEX, email)
 	if !matched {
-		return customErrors.NewUserFacing("invalid email format", http.StatusBadRequest)
+		return ErrInvalidEmailFormat
 	}
 
 	return nil
@@ -59,14 +71,7 @@ func (v *ValidationService) ValidatePassword(password string) error {
 	}
 
 	if !hasMinLen || !hasUpper || !hasLower || !hasNumber || !hasSpecial {
-		return customErrors.NewUserFacing(
-			fmt.Sprintf(
-				"password must be at least %d characters long and include at least 1 uppercase letter, "+
-					"1 lowercase letter, 1 number, and 1 special character",
-				PASSWORD_MIN_LENGTH,
-			),
-			http.StatusBadRequest,
-		)
+		return ErrInvalidPassword
 	}
 
 	return nil
@@ -74,12 +79,12 @@ func (v *ValidationService) ValidatePassword(password string) error {
 
 func (v *ValidationService) ValidateUsername(username string) error {
 	if len(username) < USERNAME_MIN_LENGTH || len(username) > USERNAME_MAX_LENGTH {
-		return customErrors.NewUserFacing("username must be at least 3 characters long", http.StatusBadRequest)
+		return ErrInvalidUsername
 	}
 
 	for _, char := range username {
 		if !unicode.IsLetter(char) && !unicode.IsDigit(char) {
-			return customErrors.NewUserFacing("username can only contain letters and numbers", http.StatusBadRequest)
+			return ErrInvalidUsername
 		}
 	}
 

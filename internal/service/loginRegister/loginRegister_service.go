@@ -2,6 +2,7 @@ package loginRegister
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 
 	customErrors "github.com/fgeck/go-register/internal/service/errors"
@@ -36,7 +37,7 @@ func (s *LoginRegisterService) LoginUser(ctx context.Context, email, password st
 	}
 
 	if err := s.passwordService.ComparePassword(user.PasswordHash, password); err != nil {
-		return "", customErrors.NewInternal("invalid password", http.StatusUnauthorized)
+		return "", customErrors.NewInternal("invalid password")
 	}
 
 	return s.jwtService.GenerateToken(user.ID)
@@ -59,20 +60,20 @@ func (s *LoginRegisterService) RegisterUser(
 	}
 
 	if err := s.userService.ValidateCreateUserParams(username, email, password); err != nil {
-		// Todo log error
-		return nil, err
+		return nil, customErrors.NewUserFacing(
+			"failed to validate create user parameters: "+err.Error(),
+			http.StatusBadRequest,
+		)
 	}
 
 	hashedPassword, err := s.passwordService.HashAndSaltPassword(password)
 	if err != nil {
-		// Todo log error
-		return nil, err
+		return nil, fmt.Errorf("failed to salt and hash password: %w", err)
 	}
 
 	userCreatedDto, err := s.userService.CreateUser(ctx, username, email, hashedPassword)
 	if err != nil {
-		// Todo log error
-		return nil, err
+		return nil, fmt.Errorf("failed to create user: %w", err)
 	}
 
 	return userCreatedDto, nil
