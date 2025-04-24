@@ -5,20 +5,6 @@ run:
 
 linters:
   default: all
-  enable:
-    - govet
-    - staticcheck
-    - gosimple
-    - unused
-    - deadcode
-    - errcheck
-    - gocyclo
-    - goimports
-    - ineffassign
-    - misspell
-    - unparam
-    - structcheck
-    - varcheck
   settings:
     gocyclo:
       min-complexity: 15 # Set the threshold for cyclomatic complexity
