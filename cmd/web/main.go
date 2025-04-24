@@ -2,7 +2,7 @@ package main
 
 import (
 	"context"
-	"fmt"
+	"errors"
 	"log"
 	"net/http"
 	"os"
@@ -18,13 +18,17 @@ import (
 	pgxUUID "github.com/vgarvardt/pgx-google-uuid/v5"
 )
 
+const (
+	CONTEXT_TIMEOUT = 10 * time.Second
+)
+
 func main() {
 	// Load configuration
 	// cfg := loadConfig()
 	port := "8080"
 
 	// Initialize context with timeout for startup operations
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), CONTEXT_TIMEOUT)
 	defer cancel()
 
 	// Database setup
@@ -35,6 +39,7 @@ func main() {
 
 	pgxConfig.AfterConnect = func(ctx context.Context, conn *pgx.Conn) error {
 		pgxUUID.Register(conn.TypeMap())
+
 		return nil
 	}
 
@@ -46,7 +51,10 @@ func main() {
 
 	// Verify database connection
 	if err := pgxConnPool.Ping(ctx); err != nil {
-		log.Fatalf("Database ping failed: %v\n", err)
+		log.Printf("Database ping failed: %v\n", err)
+		pgxConnPool.Close()
+		//nolint
+		os.Exit(1)
 	}
 
 	// Run migrations
@@ -58,34 +66,29 @@ func main() {
 	queries := repository.New(pgxConnPool)
 
 	// Initialize server
-	e := echo.New()
+	echoServer := echo.New()
 	// Middleware
-	e.Use(middleware.Logger())
+	echoServer.Use(middleware.Logger())
 	// create and use render
 
-	handlers.SetupHandlers(e, queries)
+	handlers.SetupHandlers(echoServer, queries)
 
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt)
 	defer stop()
 	// Start server
 	go func() {
-		if err := e.Start(fmt.Sprintf(":%s", port)); err != nil && err != http.ErrServerClosed {
-			e.Logger.Fatal("shutting down the server")
+		if err := echoServer.Start(":" + port); err != nil && !errors.Is(err, http.ErrServerClosed) {
+			echoServer.Logger.Fatal("shutting down the server")
 		}
 	}()
 
 	// Wait for interrupt signal to gracefully shut down the server with a timeout of 10 seconds.
 	<-ctx.Done()
-	ctx, cancel = context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
-	if err := e.Shutdown(ctx); err != nil {
-		e.Logger.Fatal(err)
-	}
-}
+	ctx, cancel = context.WithTimeout(context.Background(), CONTEXT_TIMEOUT)
 
-func runMigrations(databaseURL string) error {
-	// In production, use a proper migration tool like golang-migrate
-	// This is just a placeholder
-	log.Println("Running database migrations...")
-	return nil
+	defer cancel()
+
+	if err := echoServer.Shutdown(ctx); err != nil {
+		echoServer.Logger.Fatal(err)
+	}
 }

@@ -37,11 +37,11 @@ air &
 * [x] Add htmx to templates
 * [ ] Add DaisyUI?
 * [ ] On startup register admin user based on env
-* [ ] build register handler for storing in db
-    * [ ] password salting and hashing before storing
+* [x] build register handler for storing in db
+    * [x] password salting and hashing before storing
     * [ ] security related config - introduce config from ENV
 * [ ] build login handler emitting JWT with proper claims
 * [ ] Loggingframework like logrus
 * [ ] Dependency Injection Framework?
-* [ ] github actions for: fmt, golangci lint, build, test
+* [x] github actions for: fmt, golangci lint, build, test
 * [ ] 
