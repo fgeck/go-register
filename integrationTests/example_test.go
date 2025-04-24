@@ -1,4 +1,4 @@
-// +build integrationtest
+//go:build integrationtest
 
 package integrationTests
 
@@ -14,4 +14,3 @@ func ExampleIntegrationTest(t *testing.T) {
 	t.Log("This is an example integration test.")
 	assert.True(t, true, "This should always be true")
 }
-

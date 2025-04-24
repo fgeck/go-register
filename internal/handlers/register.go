@@ -3,9 +3,9 @@ package handlers
 import (
 	"net/http"
 
+	userfacing_errors "github.com/fgeck/go-register/internal/service/errors"
 	"github.com/fgeck/go-register/internal/service/loginRegister"
 	"github.com/fgeck/go-register/internal/service/render"
-	userfacing_errors "github.com/fgeck/go-register/internal/service/errors"
 	"github.com/fgeck/go-register/templates/views"
 	echo "github.com/labstack/echo/v4"
 )
