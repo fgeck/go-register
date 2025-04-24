@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func ExampleIntegrationTest(t *testing.T) {
+func TestExampleIntegrationTest(t *testing.T) {
 	// This is a placeholder for an integration test.
 	// You can add your integration test logic here.
 	t.Log("This is an example integration test.")
