@@ -103,13 +103,13 @@ jobs:
       #       ${{ runner.os }}-go-build-
 
       - name: Build Main Binary
-        run: go build -o main ./cmd/main.go
+        run: go build -o main ./cmd/web/main.go
 
       - name: Build Unit Test Binary
-        run: go test -c -tags=unit -o unit-tests ./...
+        run: go test -c -tags=unittest -o unit-tests ./...
 
       - name: Build Integration Test Binary
-        run: go test -c -tags=integration -o integration-tests ./integrationTests/...
+        run: go test -c -tags=integrationtest -o integration-tests ./integrationTests/...
 
   unit-tests:
     name: Run Unit Tests
