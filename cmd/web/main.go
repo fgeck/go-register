@@ -67,9 +67,8 @@ func main() {
 func connectToDatabase(ctx context.Context, cfg *config.Config) *repository.Queries {
 	pgxConfig, err := pgxpool.ParseConfig(
 		fmt.Sprintf(
-			"postgres://%s:%s@%s:%s/%s?sslmode=disable",
-			cfg.Db.Host,
-			cfg.Db.Port,
+			"postgres://%s@%s:%s/%s?sslmode=disable",
+			net.JoinHostPort(cfg.Db.User, cfg.Db.Host),
 			cfg.Db.User,
 			cfg.Db.Password,
 			cfg.Db.Database,
@@ -85,7 +84,7 @@ func connectToDatabase(ctx context.Context, cfg *config.Config) *repository.Quer
 		return nil
 	}
 
-	pgxConnPool, err := pgxpool.NewWithConfig(context.TODO(), pgxConfig)
+	pgxConnPool, err := pgxpool.NewWithConfig(ctx, pgxConfig)
 	if err != nil {
 		panic(err)
 	}
@@ -100,5 +99,6 @@ func connectToDatabase(ctx context.Context, cfg *config.Config) *repository.Quer
 	}
 
 	queries := repository.New(pgxConnPool)
+
 	return queries
 }
