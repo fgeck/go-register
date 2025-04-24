@@ -12,11 +12,15 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
+const (
+	TWENTY_FOUR_HOURS_IN_MS = 24 * 1000 * 60 * 60
+)
+
 func SetupHandlers(e *echo.Echo, queries *repository.Queries) {
 	validator := validation.NewValidationService()
 	userService := user.NewUserService(queries, validator)
 	passwordService := password.NewPasswordService()
-	jwtService := jwt.NewJwtService("secret", "issuer", 24*1000*60*60) // 24 hours
+	jwtService := jwt.NewJwtService("secret", "issuer", TWENTY_FOUR_HOURS_IN_MS)
 	loginRegisterService := loginRegister.NewLoginRegisterService(userService, passwordService, jwtService)
 	registerHandler := NewRegisterHandler(loginRegisterService)
 	loginHandler := NewLoginHandler(loginRegisterService)

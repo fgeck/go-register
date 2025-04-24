@@ -19,13 +19,17 @@ import (
 	pgxUUID "github.com/vgarvardt/pgx-google-uuid/v5"
 )
 
+const (
+	CONTEXT_TIMEOUT = 10 * time.Second
+)
+
 func main() {
 	// Load configuration
 	// cfg := loadConfig()
 	port := "8080"
 
 	// Initialize context with timeout for startup operations
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), CONTEXT_TIMEOUT)
 	defer cancel()
 
 	// Database setup
@@ -47,7 +51,9 @@ func main() {
 
 	// Verify database connection
 	if err := pgxConnPool.Ping(ctx); err != nil {
-		log.Fatalf("Database ping failed: %v\n", err)
+		log.Printf("Database ping failed: %v\n", err)
+		pgxConnPool.Close()
+		os.Exit(1)
 	}
 
 	// Run migrations
