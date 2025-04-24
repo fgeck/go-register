@@ -1,0 +1,10 @@
+
+app:
+  host: localhost
+  port: 8080
+  jwtSecret: change-m3-@$ap!
+db:
+  host: localhost
+  port: 5432
+  user: postgres
+  password: password

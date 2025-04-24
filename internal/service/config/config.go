@@ -1,80 +1,67 @@
-package main
+package config
 
-// import (
-// 	"log"
-// 	"os"
-// 	"strconv"
-// )
+import (
+	"log"
+	"strings"
 
-// type Config struct {
-// 	Host          string
-// 	Port          string
-// 	DatabaseURL   string
-// 	SessionSecret string
-// 	Env           string
-// 	HTTPS         bool
-// 	CSRFKey       string
-// 	Argon2Config  Argon2Config
-// }
+	"github.com/spf13/viper"
+)
 
-// func loadConfig() *Config {
-// 	return &Config{
-// 		ServerAddress: getEnv("SERVER_ADDRESS", ":8080"),
-// 		DatabaseURL:   getEnv("DATABASE_URL", "postgres://user:password@localhost:5432/dbname?sslmode=disable"),
-// 		SessionSecret: getEnv("SESSION_SECRET", "super-secret-key-32-chars-long"),
-// 		Env:           getEnv("ENV", "development"),
-// 		HTTPS:         getEnvAsBool("HTTPS", false),
-// 		CSRFKey:       getEnv("CSRF_KEY", "csrf-super-secret-key-32-chars"),
+type AppConfig struct {
+	Host      string `mapstructure:"host"`
+	Port      string `mapstructure:"port"`
+	JwtSecret string `mapstructure:"jwtSecret"`
+}
 
-// 		Argon2Config: Argon2Config{
-// 			Memory:      getEnvAsUint32("ARGON2_MEMORY", 64*1024), // 64MB
-// 			Iterations:  getEnvAsUint32("ARGON2_ITERATIONS", 3),
-// 			Parallelism: getEnvAsUint8("ARGON2_PARALLELISM", 2),
-// 			SaltLength:  getEnvAsUint32("ARGON2_SALT_LENGTH", 16),
-// 			KeyLength:   getEnvAsUint32("ARGON2_KEY_LENGTH", 32),
-// 		},
-// 	}
-// }
+type DbConfig struct {
+	Host     string `mapstructure:"host"`
+	Port     string `mapstructure:"port"`
+	User     string `mapstructure:"user"`
+	Password string `mapstructure:"password"`
+}
 
-// func getEnv(key, fallback string) string {
-// 	if value, exists := os.LookupEnv(key); exists {
-// 		return value
-// 	}
-// 	return fallback
-// }
+type Config struct {
+	App AppConfig `mapstructure:"app"`
+	Db  DbConfig  `mapstructure:"db"`
+}
 
-// func getEnvAsBool(key string, fallback bool) bool {
-// 	if value, exists := os.LookupEnv(key); exists {
-// 		b, err := strconv.ParseBool(value)
-// 		if err != nil {
-// 			log.Printf("Invalid bool value for %s: %v", key, err)
-// 			return fallback
-// 		}
-// 		return b
-// 	}
-// 	return fallback
-// }
+type ConfigLoaderInterface interface {
+	LoadConfig() (*Config, error)
+}
 
-// func getEnvAsUint32(key string, fallback uint32) uint32 {
-// 	if value, exists := os.LookupEnv(key); exists {
-// 		i, err := strconv.ParseUint(value, 10, 32)
-// 		if err != nil {
-// 			log.Printf("Invalid uint32 value for %s: %v", key, err)
-// 			return fallback
-// 		}
-// 		return uint32(i)
-// 	}
-// 	return fallback
-// }
+type ConfigLoader struct {
+	viper *viper.Viper
+}
 
-// func getEnvAsUint8(key string, fallback uint8) uint8 {
-// 	if value, exists := os.LookupEnv(key); exists {
-// 		i, err := strconv.ParseUint(value, 10, 8)
-// 		if err != nil {
-// 			log.Printf("Invalid uint8 value for %s: %v", key, err)
-// 			return fallback
-// 		}
-// 		return uint8(i)
-// 	}
-// 	return fallback
-// }
+func NewConfigLoader() *ConfigLoader {
+	return &ConfigLoader{
+		viper: viper.New(),
+	}
+}
+
+func (c *ConfigLoader) LoadConfig(configPath string) (*Config, error) {
+	c.viper.SetConfigName("config")
+	c.viper.SetConfigType("yaml")
+	c.viper.AddConfigPath(".")
+	c.viper.AddConfigPath("./config")
+	c.viper.AddConfigPath(configPath)
+
+	// Enable automatic environment variable binding
+	c.viper.AutomaticEnv()
+
+	// Replace `.` in environment variable keys with `_` to match YAML structure
+	c.viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
+
+	// Read the config file
+	if err := c.viper.ReadInConfig(); err != nil {
+		log.Printf("Error reading config file: %v", err)
+		return nil, err
+	}
+
+	var config Config
+	if err := c.viper.Unmarshal(&config); err != nil {
+		return nil, err
+	}
+
+	return &config, nil
+}
