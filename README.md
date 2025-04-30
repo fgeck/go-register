@@ -32,14 +32,14 @@ air &
 
 ## ToDo
 
-* [x] Echo Server renders templ templates
+* [x] Echo Server renders templ templates   
 * [x] Add Tailwind to templates
 * [x] Add htmx to templates
 * [ ] Add DaisyUI?
-* [ ] On startup register admin user based on env
+* [x] On startup register admin user based on env
 * [x] build register handler for storing in db
     * [x] password salting and hashing before storing
-    * [ ] security related config - introduce config from ENV
+    * [x] security related config - introduce config from ENV
 * [ ] build login handler emitting JWT with proper claims
 * [ ] Loggingframework like logrus
 * [ ] Dependency Injection Framework?
