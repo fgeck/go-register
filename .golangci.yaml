@@ -12,6 +12,7 @@ linters:
     - gochecknoglobals
     - godox
     - nlreturn
+    - varnamelen
     - wrapcheck
     - wsl
   settings:

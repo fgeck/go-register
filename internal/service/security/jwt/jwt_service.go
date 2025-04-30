@@ -35,6 +35,7 @@ var (
 	ErrInvalidTokenClaims   = errors.New("invalid token claims")
 	ErrMissingUserIdClaim   = errors.New("missing userId claim")
 	ErrMissingUserRoleClaim = errors.New("missing userRole claim")
+	ErrInvalidClaims        = errors.New("userId or userRole claim is nil")
 )
 
 func (s *JwtService) GenerateToken(user *user.UserDto) (string, error) {
@@ -90,11 +91,16 @@ func (s *JwtService) buildClaims(jwtClaims jwt.MapClaims) (*Claims, error) {
 	if !ok {
 		return nil, ErrMissingUserRoleClaim
 	}
-	if userId == nil || userRole == nil {
-		//nolint
-		return nil, fmt.Errorf("userId or userRole claim is nil. claims: %v", jwtClaims)
 
+	// Check type assertions for userId and userRole
+	userIdStr, ok := userId.(string)
+	if !ok {
+		return nil, fmt.Errorf("%w: userId is not a string", ErrInvalidClaims)
+	}
+	userRoleStr, ok := userRole.(string)
+	if !ok {
+		return nil, fmt.Errorf("%w: userRole is not a string", ErrInvalidClaims)
 	}
 
-	return NewClaims(userId.(string), userRole.(string)), nil
+	return NewClaims(userIdStr, userRoleStr), nil
 }
