@@ -34,6 +34,9 @@ app:
   host: localhost
   port: 8080
   jwtSecret: change-m3-@$ap!
+  adminUser: admin
+  adminPassword: adminpassword
+  adminEmail: wasd
 db:
   host: localhost
   port: 5432
@@ -49,10 +52,16 @@ db:
 
 		os.Setenv("APP_HOST", "127.0.0.1")
 		os.Setenv("APP_PORT", "9090")
+		os.Setenv("APP_ADMINUSER", "admin")
+		os.Setenv("APP_ADMINPASSWORD", "adminpassword")
+		os.Setenv("APP_ADMINEMAIL", "adm@test.io")
 		os.Setenv("DB_USER", "testuser")
 		os.Setenv("DB_PASSWORD", "testpassword")
-		defer os.Unsetenv("HOST")
-		defer os.Unsetenv("PORT")
+		defer os.Unsetenv("APP_HOST")
+		defer os.Unsetenv("APP_PORT")
+		defer os.Unsetenv("APP_ADMINUSER")
+		defer os.Unsetenv("APP_ADMINPASSWORD")
+		defer os.Unsetenv("APP_ADMINEMAIL")
 		defer os.Unsetenv("DB_USER")
 		defer os.Unsetenv("DB_PASSWORD")
 
@@ -65,6 +74,9 @@ db:
 		assert.Equal(t, "127.0.0.1", config.App.Host)
 		assert.Equal(t, "9090", config.App.Port)
 		assert.Equal(t, "change-m3-@$ap!", config.App.JwtSecret)
+		assert.Equal(t, "admin", config.App.AdminUser)
+		assert.Equal(t, "adminpassword", config.App.AdminPassword)
+		assert.Equal(t, "adm@test.io", config.App.AdminEmail)
 		assert.Equal(t, "localhost", config.Db.Host)
 		assert.Equal(t, "5432", config.Db.Port)
 		assert.Equal(t, "testuser", config.Db.User)

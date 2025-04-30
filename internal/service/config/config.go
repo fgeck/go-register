@@ -8,9 +8,12 @@ import (
 )
 
 type AppConfig struct {
-	Host      string `mapstructure:"host"`
-	Port      string `mapstructure:"port"`
-	JwtSecret string `mapstructure:"jwtSecret"`
+	Host          string `mapstructure:"host"`
+	Port          string `mapstructure:"port"`
+	JwtSecret     string `mapstructure:"jwtSecret"`
+	AdminUser     string `mapstructure:"adminUser"`
+	AdminPassword string `mapstructure:"adminPassword"`
+	AdminEmail    string `mapstructure:"adminEmail"`
 }
 
 type DbConfig struct {
