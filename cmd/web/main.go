@@ -42,7 +42,7 @@ func main() {
 
 	echoServer := echo.New()
 	echoServer.Use(middleware.Logger())
-	handlers.InitServer(echoServer, queries, config)
+	handlers.InitServer(echoServer, queries, cfg)
 
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt)
 	defer stop()
