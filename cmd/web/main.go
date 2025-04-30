@@ -108,7 +108,6 @@ func createAdminUser(ctx context.Context, queries *repository.Queries, cfg *conf
 
 func connectToDatabase(ctx context.Context, cfg *config.Config) *repository.Queries {
 	pgxConfig, err := pgxpool.ParseConfig(
-		//nolint:nosprintfhostport
 		fmt.Sprintf(
 			"postgres://%s:%s@%s/%s?sslmode=disable",
 			cfg.Db.User,
@@ -136,7 +135,6 @@ func connectToDatabase(ctx context.Context, cfg *config.Config) *repository.Quer
 	if err := pgxConnPool.Ping(ctx); err != nil {
 		log.Printf("Database ping failed: %v\n", err)
 		pgxConnPool.Close()
-		//nolint
 		os.Exit(1)
 	}
 

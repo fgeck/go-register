@@ -32,7 +32,7 @@ air &
 
 ## ToDo
 
-* [x] Echo Server renders templ templates
+* [x] Echo Server renders templ templates   
 * [x] Add Tailwind to templates
 * [x] Add htmx to templates
 * [ ] Add DaisyUI?
