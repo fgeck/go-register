@@ -5,10 +5,8 @@ Template repo for user registration and signin based on GoTTH (Go, Tailwind, Tem
 ## Prerequisites
 
 ```bash
-brew install sqlc tailwindcss mockery
-go install github.com/a-h/templ/cmd/templ@latest
-go install github.com/air-verse/air@latest
-go mod download
+brew install go-task
+task install-dev-tools
 ```
 
 ## How to run for Development
@@ -23,11 +21,13 @@ air &
 
 ## Tools used
 
+* [Task](https://taskfile.dev/)
 * [echo](https://echo.labstack.com/)
 * [sqlc](https://sqlc.dev/)
 * [templ](https://github.com/a-h/templ)
 * [air](https://github.com/air-verse/air)
 * [tailwindcss](https://tailwindcss.com/)
+* [podman](https://podman.io/)
 * [daisyui](https://daisyui.com/) ?
 
 ## ToDo
