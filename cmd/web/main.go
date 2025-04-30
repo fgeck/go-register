@@ -14,6 +14,7 @@ import (
 	"github.com/fgeck/go-register/internal/handlers"
 	"github.com/fgeck/go-register/internal/repository"
 	"github.com/fgeck/go-register/internal/service/config"
+	"github.com/fgeck/go-register/internal/service/security/password"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/labstack/echo/v4"
@@ -37,10 +38,11 @@ func main() {
 	defer cancel()
 
 	queries := connectToDatabase(ctx, cfg)
+	createAdminUser(ctx, queries, cfg)
 
 	echoServer := echo.New()
 	echoServer.Use(middleware.Logger())
-	handlers.SetupHandlers(echoServer, queries)
+	handlers.InitServer(echoServer, queries, config)
 
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt)
 	defer stop()
@@ -64,14 +66,54 @@ func main() {
 	}
 }
 
+func createAdminUser(ctx context.Context, queries *repository.Queries, cfg *config.Config) {
+	adminName := cfg.App.AdminUser
+	adminPassword := cfg.App.AdminPassword
+	adminEmail := cfg.App.AdminEmail
+	hashedPassword, err := password.NewPasswordService().HashAndSaltPassword(adminPassword)
+	if err != nil {
+		log.Printf("Error hashing password: %v\n", err)
+		return
+	}
+
+	exists, err := queries.UserExistsByEmail(ctx, cfg.App.AdminEmail)
+	if err != nil {
+		log.Printf("Error checking if admin user exists: %v\n", err)
+		return
+	}
+
+	if exists {
+		log.Println("Admin user already exists, skipping creation.")
+		return
+	}
+
+	userParams := repository.CreateUserParams{
+		Username:     adminName,
+		Email:        adminEmail,
+		PasswordHash: hashedPassword,
+	}
+	user, err := queries.CreateUser(ctx, userParams)
+	if err != nil {
+		log.Printf("Error creating admin user: %v\n", err)
+		return
+	}
+
+	log.Printf("Admin user created successfully:\n"+
+		"	id: %q\n	email: %q\n	username: %q\n",
+		user.ID,
+		user.Username,
+		user.Email,
+	)
+}
+
 func connectToDatabase(ctx context.Context, cfg *config.Config) *repository.Queries {
 	pgxConfig, err := pgxpool.ParseConfig(
 		//nolint:nosprintfhostport
 		fmt.Sprintf(
-			"postgres://%s@%s:%s/%s?sslmode=disable",
-			net.JoinHostPort(cfg.Db.User, cfg.Db.Host),
+			"postgres://%s:%s@%s/%s?sslmode=disable",
 			cfg.Db.User,
 			cfg.Db.Password,
+			net.JoinHostPort(cfg.Db.Host, cfg.Db.Port),
 			cfg.Db.Database,
 		),
 	)
@@ -89,7 +131,6 @@ func connectToDatabase(ctx context.Context, cfg *config.Config) *repository.Quer
 	if err != nil {
 		panic(err)
 	}
-	defer pgxConnPool.Close()
 
 	// Verify database connection
 	if err := pgxConnPool.Ping(ctx); err != nil {

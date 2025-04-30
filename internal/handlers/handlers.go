@@ -4,6 +4,7 @@ import (
 	"log"
 
 	"github.com/fgeck/go-register/internal/repository"
+	"github.com/fgeck/go-register/internal/service/config"
 	"github.com/fgeck/go-register/internal/service/loginRegister"
 	"github.com/fgeck/go-register/internal/service/security/jwt"
 	"github.com/fgeck/go-register/internal/service/security/password"
@@ -14,13 +15,14 @@ import (
 
 const (
 	TWENTY_FOUR_HOURS_IN_MS = 24 * 1000 * 60 * 60
+	ISSUER                  = "go-register"
 )
 
-func SetupHandlers(echoServer *echo.Echo, queries *repository.Queries) {
+func InitServer(echoServer *echo.Echo, queries *repository.Queries, config *config.Config) {
 	validator := validation.NewValidationService()
 	userService := user.NewUserService(queries, validator)
 	passwordService := password.NewPasswordService()
-	jwtService := jwt.NewJwtService("secret", "issuer", TWENTY_FOUR_HOURS_IN_MS)
+	jwtService := jwt.NewJwtService(config.App.JwtSecret, ISSUER, TWENTY_FOUR_HOURS_IN_MS)
 	loginRegisterService := loginRegister.NewLoginRegisterService(userService, passwordService, jwtService)
 	registerHandler := NewRegisterHandler(loginRegisterService)
 	loginHandler := NewLoginHandler(loginRegisterService)
