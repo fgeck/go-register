@@ -47,7 +47,7 @@ db:
 
 	t.Run("successfully loads valid config", func(t *testing.T) {
 		configFile, err := createTempConfigFile(validConfig)
-		assert.NoError(t, err)
+		require.NoError(t, err)
 		configPath := filepath.Dir(configFile)
 		defer os.Remove(configPath)
 
@@ -71,7 +71,7 @@ db:
 		config, err := loader.LoadConfig(configPath)
 
 		// Validate the results
-		assert.NoError(t, err)
+		require.NoError(t, err)
 		assert.Equal(t, "127.0.0.1", config.App.Host)
 		assert.Equal(t, "9090", config.App.Port)
 		assert.Equal(t, "change-m3-@$ap!", config.App.JwtSecret)
@@ -106,7 +106,7 @@ db:
   invalid_field: true
 `
 		configPath, err := createTempConfigFile(invalidConfig)
-		assert.NoError(t, err)
+		require.NoError(t, err)
 		defer os.Remove(configPath)
 
 		loader := config.NewLoader()
@@ -118,7 +118,7 @@ db:
 
 	t.Run("uses default values when environment variables are not set", func(t *testing.T) {
 		configFile, err := createTempConfigFile(validConfig)
-		assert.NoError(t, err)
+		require.NoError(t, err)
 		configPath := filepath.Dir(configFile)
 		defer os.Remove(configPath)
 
@@ -133,7 +133,7 @@ db:
 		config, err := loader.LoadConfig(configPath)
 
 		// Validate the results
-		assert.NoError(t, err)
+		require.NoError(t, err)
 		assert.Equal(t, "localhost", config.App.Host)
 		assert.Equal(t, "8080", config.App.Port)
 		assert.Equal(t, "change-m3-@$ap!", config.App.JwtSecret)

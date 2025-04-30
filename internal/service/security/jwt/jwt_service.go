@@ -63,6 +63,7 @@ func (s *JwtService) ValidateAndExtractClaims(givenToken string) (*Claims, error
 	token, err := jwt.Parse(givenToken, func(token *jwt.Token) (interface{}, error) {
 		// Ensure the signing method is HMAC
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			//nolint
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 		}
 		return []byte(s.secretKey), nil
@@ -90,6 +91,7 @@ func (s *JwtService) buildClaims(jwtClaims jwt.MapClaims) (*Claims, error) {
 		return nil, ErrMissingUserRoleClaim
 	}
 	if userId == nil || userRole == nil {
+		//nolint
 		return nil, fmt.Errorf("userId or userRole claim is nil. claims: %v", jwtClaims)
 
 	}

@@ -51,7 +51,7 @@ func TestLoginUser(t *testing.T) {
 
 		result, err := service.LoginUser(ctx, email, password)
 
-		assert.NoError(t, err)
+		require.NoError(t, err)
 		assert.Equal(t, token, result)
 
 		mockUserService.AssertExpectations(t)
@@ -113,7 +113,7 @@ func TestRegisterUser(t *testing.T) {
 
 		result, err := service.RegisterUser(ctx, username, email, password)
 
-		assert.NoError(t, err)
+		require.NoError(t, err)
 		assert.NotNil(t, result)
 		assert.Equal(t, username, result.Username)
 		assert.Equal(t, email, result.Email)

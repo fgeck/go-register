@@ -57,7 +57,7 @@ func TestGenerateToken(t *testing.T) {
 		}
 
 		token, err := jwtService.GenerateToken(userDto)
-		assert.NoError(t, err)
+		require.NoError(t, err)
 		assert.NotEmpty(t, token)
 	})
 
@@ -99,10 +99,10 @@ func TestValidateAndExtractClaims(t *testing.T) {
 		}
 
 		token, err := jwtService.GenerateToken(userDto)
-		assert.NoError(t, err)
+		require.NoError(t, err)
 
 		extractedClaims, err := jwtService.ValidateAndExtractClaims(token)
-		assert.NoError(t, err)
+		require.NoError(t, err)
 		assert.Equal(t, userID.String(), extractedClaims.UserId)
 		assert.Equal(t, user.UserRoleAdmin.Name, extractedClaims.UserRole)
 	})
@@ -119,7 +119,7 @@ func TestValidateAndExtractClaims(t *testing.T) {
 	t.Run("No HMAC Signing Method Used", func(t *testing.T) {
 		t.Parallel()
 		privateKey, err := jwtGo.ParseRSAPrivateKeyFromPEM([]byte(TEST_PRIVEATE_KEY))
-		assert.NoError(t, err)
+		require.NoError(t, err)
 
 		// Create a token with RS256 signing method
 		claims := jwtGo.MapClaims{
@@ -133,7 +133,7 @@ func TestValidateAndExtractClaims(t *testing.T) {
 
 		token := jwtGo.NewWithClaims(jwtGo.SigningMethodRS256, claims)
 		signedToken, err := token.SignedString(privateKey)
-		assert.NoError(t, err)
+		require.NoError(t, err)
 
 		// Validate the token using the JwtService
 		extractedClaims, err := jwtService.ValidateAndExtractClaims(signedToken)
@@ -154,7 +154,7 @@ func TestValidateAndExtractClaims(t *testing.T) {
 
 		token := jwtGo.NewWithClaims(jwtGo.SigningMethodHS256, claims)
 		signedToken, err := token.SignedString([]byte(TEST_SECRET))
-		assert.NoError(t, err)
+		require.NoError(t, err)
 
 		extractedClaims, err := jwtService.ValidateAndExtractClaims(signedToken)
 		require.Error(t, err)
@@ -174,7 +174,7 @@ func TestValidateAndExtractClaims(t *testing.T) {
 
 		token := jwtGo.NewWithClaims(jwtGo.SigningMethodHS256, claims)
 		signedToken, err := token.SignedString([]byte(TEST_SECRET))
-		assert.NoError(t, err)
+		require.NoError(t, err)
 
 		extractedClaims, err := jwtService.ValidateAndExtractClaims(signedToken)
 		require.Error(t, err)

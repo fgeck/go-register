@@ -42,7 +42,7 @@ func TestCreateUser(t *testing.T) {
 
 		userDto, err := userService.CreateUser(ctx, username, email, passwordHash)
 
-		assert.NoError(t, err)
+		require.NoError(t, err)
 		assert.NotNil(t, userDto)
 		assert.Equal(t, username, userDto.Username)
 		assert.Equal(t, email, userDto.Email)
@@ -77,7 +77,7 @@ func TestValidateCreateUserParams(t *testing.T) {
 
 		err := userService.ValidateCreateUserParams(username, email, password)
 
-		assert.NoError(t, err)
+		require.NoError(t, err)
 
 		mockValidator.AssertExpectations(t)
 	})
@@ -144,7 +144,7 @@ func TestUserExistsByEmail(t *testing.T) {
 
 		exists, err := userService.UserExistsByEmail(ctx, email)
 
-		assert.NoError(t, err)
+		require.NoError(t, err)
 		assert.True(t, exists)
 
 		mockQueries.AssertExpectations(t)
@@ -156,7 +156,7 @@ func TestUserExistsByEmail(t *testing.T) {
 
 		exists, err := userService.UserExistsByEmail(ctx, email)
 
-		assert.NoError(t, err)
+		require.NoError(t, err)
 		assert.False(t, exists)
 
 		mockQueries.AssertExpectations(t)
@@ -190,7 +190,7 @@ func TestGetUserByEmail(t *testing.T) {
 
 		userDto, err := userService.GetUserByEmail(ctx, email)
 
-		assert.NoError(t, err)
+		require.NoError(t, err)
 		assert.NotNil(t, userDto)
 		assert.Equal(t, "testuser", userDto.Username)
 		assert.Equal(t, email, userDto.Email)
