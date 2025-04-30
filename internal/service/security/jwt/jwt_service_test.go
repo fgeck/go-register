@@ -19,6 +19,7 @@ const (
 )
 
 func generatePrivateKey(t *testing.T) *rsa.PrivateKey {
+	t.Helper()
 	privateKey, err := rsa.GenerateKey(rand.Reader, 2048)
 	require.NoError(t, err, "Failed to generate RSA private key")
 	return privateKey
