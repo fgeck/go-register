@@ -9,6 +9,7 @@ import (
 
 	"github.com/fgeck/go-register/internal/service/config"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func createTempConfigFile(content string) (string, error) {
@@ -87,7 +88,7 @@ db:
 		loader := config.NewLoader()
 		config, err := loader.LoadConfig("nonexistent.yaml")
 
-		assert.Error(t, err)
+		require.Error(t, err)
 		assert.Nil(t, config)
 	})
 
@@ -111,7 +112,7 @@ db:
 		loader := config.NewLoader()
 		config, err := loader.LoadConfig(configPath)
 
-		assert.Error(t, err)
+		require.Error(t, err)
 		assert.Nil(t, config)
 	})
 

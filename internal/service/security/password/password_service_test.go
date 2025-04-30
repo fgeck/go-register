@@ -8,6 +8,7 @@ import (
 
 	"github.com/fgeck/go-register/internal/service/security/password"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestHashPassword(t *testing.T) {
@@ -28,7 +29,7 @@ func TestHashPassword(t *testing.T) {
 
 	t.Run("fails to hash password", func(t *testing.T) {
 		_, err := service.HashAndSaltPassword("error")
-		assert.Error(t, err)
+		require.Error(t, err)
 		assert.Equal(t, "mock hashing error", err.Error())
 	})
 }
@@ -50,7 +51,7 @@ func TestComparePassword(t *testing.T) {
 
 	t.Run("fails to compare password", func(t *testing.T) {
 		err := service.ComparePassword("mockHashedPassword", "wrongPassword")
-		assert.Error(t, err)
+		require.Error(t, err)
 		assert.Equal(t, "mock invalid password", err.Error())
 	})
 }

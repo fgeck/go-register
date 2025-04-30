@@ -7,6 +7,9 @@ linters:
   default: all
   disable:
     - depguard
+    - exhaustruct
+    - funlen
+    - gochecknoglobals
     - godox
     - nlreturn
     - wrapcheck

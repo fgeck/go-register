@@ -9,6 +9,7 @@ import (
 	"github.com/fgeck/go-register/internal/service/user"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 const (
@@ -68,7 +69,7 @@ func TestGenerateToken(t *testing.T) {
 		}
 
 		token, err := jwtService.GenerateToken(userDto)
-		assert.Error(t, err)
+		require.Error(t, err)
 		assert.Empty(t, token)
 	})
 
@@ -80,7 +81,7 @@ func TestGenerateToken(t *testing.T) {
 		}
 
 		token, err := jwtService.GenerateToken(userDto)
-		assert.Error(t, err)
+		require.Error(t, err)
 		assert.Empty(t, token)
 	})
 }
@@ -111,7 +112,7 @@ func TestValidateAndExtractClaims(t *testing.T) {
 		token := "invalid-token"
 
 		extractedUser, err := jwtService.ValidateAndExtractClaims(token)
-		assert.Error(t, err)
+		require.Error(t, err)
 		assert.Nil(t, extractedUser)
 	})
 
@@ -136,7 +137,7 @@ func TestValidateAndExtractClaims(t *testing.T) {
 
 		// Validate the token using the JwtService
 		extractedClaims, err := jwtService.ValidateAndExtractClaims(signedToken)
-		assert.Error(t, err)
+		require.Error(t, err)
 		assert.Nil(t, extractedClaims)
 		assert.Contains(t, err.Error(), "unexpected signing method")
 	})
@@ -156,7 +157,7 @@ func TestValidateAndExtractClaims(t *testing.T) {
 		assert.NoError(t, err)
 
 		extractedClaims, err := jwtService.ValidateAndExtractClaims(signedToken)
-		assert.Error(t, err)
+		require.Error(t, err)
 		assert.Nil(t, extractedClaims)
 		assert.Contains(t, err.Error(), "missing userId claim")
 	})
@@ -176,7 +177,7 @@ func TestValidateAndExtractClaims(t *testing.T) {
 		assert.NoError(t, err)
 
 		extractedClaims, err := jwtService.ValidateAndExtractClaims(signedToken)
-		assert.Error(t, err)
+		require.Error(t, err)
 		assert.Nil(t, extractedClaims)
 		assert.Contains(t, err.Error(), "missing userRole claim")
 	})

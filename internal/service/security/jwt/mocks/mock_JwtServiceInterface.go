@@ -5,7 +5,8 @@
 package jwt
 
 import (
-	"github.com/google/uuid"
+	"github.com/fgeck/go-register/internal/service/security/jwt"
+	"github.com/fgeck/go-register/internal/service/user"
 	mock "github.com/stretchr/testify/mock"
 )
 
@@ -36,119 +37,9 @@ func (_m *MockJwtServiceInterface) EXPECT() *MockJwtServiceInterface_Expecter {
 	return &MockJwtServiceInterface_Expecter{mock: &_m.Mock}
 }
 
-// ExtractClaims provides a mock function for the type MockJwtServiceInterface
-func (_mock *MockJwtServiceInterface) ExtractClaims(token string) (map[string]interface{}, error) {
-	ret := _mock.Called(token)
-
-	if len(ret) == 0 {
-		panic("no return value specified for ExtractClaims")
-	}
-
-	var r0 map[string]interface{}
-	var r1 error
-	if returnFunc, ok := ret.Get(0).(func(string) (map[string]interface{}, error)); ok {
-		return returnFunc(token)
-	}
-	if returnFunc, ok := ret.Get(0).(func(string) map[string]interface{}); ok {
-		r0 = returnFunc(token)
-	} else {
-		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(map[string]interface{})
-		}
-	}
-	if returnFunc, ok := ret.Get(1).(func(string) error); ok {
-		r1 = returnFunc(token)
-	} else {
-		r1 = ret.Error(1)
-	}
-	return r0, r1
-}
-
-// MockJwtServiceInterface_ExtractClaims_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'ExtractClaims'
-type MockJwtServiceInterface_ExtractClaims_Call struct {
-	*mock.Call
-}
-
-// ExtractClaims is a helper method to define mock.On call
-//   - token
-func (_e *MockJwtServiceInterface_Expecter) ExtractClaims(token interface{}) *MockJwtServiceInterface_ExtractClaims_Call {
-	return &MockJwtServiceInterface_ExtractClaims_Call{Call: _e.mock.On("ExtractClaims", token)}
-}
-
-func (_c *MockJwtServiceInterface_ExtractClaims_Call) Run(run func(token string)) *MockJwtServiceInterface_ExtractClaims_Call {
-	_c.Call.Run(func(args mock.Arguments) {
-		run(args[0].(string))
-	})
-	return _c
-}
-
-func (_c *MockJwtServiceInterface_ExtractClaims_Call) Return(stringToIfaceVal map[string]interface{}, err error) *MockJwtServiceInterface_ExtractClaims_Call {
-	_c.Call.Return(stringToIfaceVal, err)
-	return _c
-}
-
-func (_c *MockJwtServiceInterface_ExtractClaims_Call) RunAndReturn(run func(token string) (map[string]interface{}, error)) *MockJwtServiceInterface_ExtractClaims_Call {
-	_c.Call.Return(run)
-	return _c
-}
-
-// ExtractUserId provides a mock function for the type MockJwtServiceInterface
-func (_mock *MockJwtServiceInterface) ExtractUserId(token string) (string, error) {
-	ret := _mock.Called(token)
-
-	if len(ret) == 0 {
-		panic("no return value specified for ExtractUserId")
-	}
-
-	var r0 string
-	var r1 error
-	if returnFunc, ok := ret.Get(0).(func(string) (string, error)); ok {
-		return returnFunc(token)
-	}
-	if returnFunc, ok := ret.Get(0).(func(string) string); ok {
-		r0 = returnFunc(token)
-	} else {
-		r0 = ret.Get(0).(string)
-	}
-	if returnFunc, ok := ret.Get(1).(func(string) error); ok {
-		r1 = returnFunc(token)
-	} else {
-		r1 = ret.Error(1)
-	}
-	return r0, r1
-}
-
-// MockJwtServiceInterface_ExtractUserId_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'ExtractUserId'
-type MockJwtServiceInterface_ExtractUserId_Call struct {
-	*mock.Call
-}
-
-// ExtractUserId is a helper method to define mock.On call
-//   - token
-func (_e *MockJwtServiceInterface_Expecter) ExtractUserId(token interface{}) *MockJwtServiceInterface_ExtractUserId_Call {
-	return &MockJwtServiceInterface_ExtractUserId_Call{Call: _e.mock.On("ExtractUserId", token)}
-}
-
-func (_c *MockJwtServiceInterface_ExtractUserId_Call) Run(run func(token string)) *MockJwtServiceInterface_ExtractUserId_Call {
-	_c.Call.Run(func(args mock.Arguments) {
-		run(args[0].(string))
-	})
-	return _c
-}
-
-func (_c *MockJwtServiceInterface_ExtractUserId_Call) Return(s string, err error) *MockJwtServiceInterface_ExtractUserId_Call {
-	_c.Call.Return(s, err)
-	return _c
-}
-
-func (_c *MockJwtServiceInterface_ExtractUserId_Call) RunAndReturn(run func(token string) (string, error)) *MockJwtServiceInterface_ExtractUserId_Call {
-	_c.Call.Return(run)
-	return _c
-}
-
 // GenerateToken provides a mock function for the type MockJwtServiceInterface
-func (_mock *MockJwtServiceInterface) GenerateToken(userId uuid.UUID) (string, error) {
-	ret := _mock.Called(userId)
+func (_mock *MockJwtServiceInterface) GenerateToken(user1 *user.UserDto) (string, error) {
+	ret := _mock.Called(user1)
 
 	if len(ret) == 0 {
 		panic("no return value specified for GenerateToken")
@@ -156,16 +47,16 @@ func (_mock *MockJwtServiceInterface) GenerateToken(userId uuid.UUID) (string, e
 
 	var r0 string
 	var r1 error
-	if returnFunc, ok := ret.Get(0).(func(uuid.UUID) (string, error)); ok {
-		return returnFunc(userId)
+	if returnFunc, ok := ret.Get(0).(func(*user.UserDto) (string, error)); ok {
+		return returnFunc(user1)
 	}
-	if returnFunc, ok := ret.Get(0).(func(uuid.UUID) string); ok {
-		r0 = returnFunc(userId)
+	if returnFunc, ok := ret.Get(0).(func(*user.UserDto) string); ok {
+		r0 = returnFunc(user1)
 	} else {
 		r0 = ret.Get(0).(string)
 	}
-	if returnFunc, ok := ret.Get(1).(func(uuid.UUID) error); ok {
-		r1 = returnFunc(userId)
+	if returnFunc, ok := ret.Get(1).(func(*user.UserDto) error); ok {
+		r1 = returnFunc(user1)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -178,14 +69,14 @@ type MockJwtServiceInterface_GenerateToken_Call struct {
 }
 
 // GenerateToken is a helper method to define mock.On call
-//   - userId
-func (_e *MockJwtServiceInterface_Expecter) GenerateToken(userId interface{}) *MockJwtServiceInterface_GenerateToken_Call {
-	return &MockJwtServiceInterface_GenerateToken_Call{Call: _e.mock.On("GenerateToken", userId)}
+//   - user1
+func (_e *MockJwtServiceInterface_Expecter) GenerateToken(user1 interface{}) *MockJwtServiceInterface_GenerateToken_Call {
+	return &MockJwtServiceInterface_GenerateToken_Call{Call: _e.mock.On("GenerateToken", user1)}
 }
 
-func (_c *MockJwtServiceInterface_GenerateToken_Call) Run(run func(userId uuid.UUID)) *MockJwtServiceInterface_GenerateToken_Call {
+func (_c *MockJwtServiceInterface_GenerateToken_Call) Run(run func(user1 *user.UserDto)) *MockJwtServiceInterface_GenerateToken_Call {
 	_c.Call.Run(func(args mock.Arguments) {
-		run(args[0].(uuid.UUID))
+		run(args[0].(*user.UserDto))
 	})
 	return _c
 }
@@ -195,115 +86,63 @@ func (_c *MockJwtServiceInterface_GenerateToken_Call) Return(s string, err error
 	return _c
 }
 
-func (_c *MockJwtServiceInterface_GenerateToken_Call) RunAndReturn(run func(userId uuid.UUID) (string, error)) *MockJwtServiceInterface_GenerateToken_Call {
+func (_c *MockJwtServiceInterface_GenerateToken_Call) RunAndReturn(run func(user1 *user.UserDto) (string, error)) *MockJwtServiceInterface_GenerateToken_Call {
 	_c.Call.Return(run)
 	return _c
 }
 
-// ParseToken provides a mock function for the type MockJwtServiceInterface
-func (_mock *MockJwtServiceInterface) ParseToken(token string) (string, error) {
-	ret := _mock.Called(token)
+// ValidateAndExtractClaims provides a mock function for the type MockJwtServiceInterface
+func (_mock *MockJwtServiceInterface) ValidateAndExtractClaims(givenToken string) (*jwt.Claims, error) {
+	ret := _mock.Called(givenToken)
 
 	if len(ret) == 0 {
-		panic("no return value specified for ParseToken")
+		panic("no return value specified for ValidateAndExtractClaims")
 	}
 
-	var r0 string
+	var r0 *jwt.Claims
 	var r1 error
-	if returnFunc, ok := ret.Get(0).(func(string) (string, error)); ok {
-		return returnFunc(token)
+	if returnFunc, ok := ret.Get(0).(func(string) (*jwt.Claims, error)); ok {
+		return returnFunc(givenToken)
 	}
-	if returnFunc, ok := ret.Get(0).(func(string) string); ok {
-		r0 = returnFunc(token)
+	if returnFunc, ok := ret.Get(0).(func(string) *jwt.Claims); ok {
+		r0 = returnFunc(givenToken)
 	} else {
-		r0 = ret.Get(0).(string)
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*jwt.Claims)
+		}
 	}
 	if returnFunc, ok := ret.Get(1).(func(string) error); ok {
-		r1 = returnFunc(token)
+		r1 = returnFunc(givenToken)
 	} else {
 		r1 = ret.Error(1)
 	}
 	return r0, r1
 }
 
-// MockJwtServiceInterface_ParseToken_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'ParseToken'
-type MockJwtServiceInterface_ParseToken_Call struct {
+// MockJwtServiceInterface_ValidateAndExtractClaims_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'ValidateAndExtractClaims'
+type MockJwtServiceInterface_ValidateAndExtractClaims_Call struct {
 	*mock.Call
 }
 
-// ParseToken is a helper method to define mock.On call
-//   - token
-func (_e *MockJwtServiceInterface_Expecter) ParseToken(token interface{}) *MockJwtServiceInterface_ParseToken_Call {
-	return &MockJwtServiceInterface_ParseToken_Call{Call: _e.mock.On("ParseToken", token)}
+// ValidateAndExtractClaims is a helper method to define mock.On call
+//   - givenToken
+func (_e *MockJwtServiceInterface_Expecter) ValidateAndExtractClaims(givenToken interface{}) *MockJwtServiceInterface_ValidateAndExtractClaims_Call {
+	return &MockJwtServiceInterface_ValidateAndExtractClaims_Call{Call: _e.mock.On("ValidateAndExtractClaims", givenToken)}
 }
 
-func (_c *MockJwtServiceInterface_ParseToken_Call) Run(run func(token string)) *MockJwtServiceInterface_ParseToken_Call {
+func (_c *MockJwtServiceInterface_ValidateAndExtractClaims_Call) Run(run func(givenToken string)) *MockJwtServiceInterface_ValidateAndExtractClaims_Call {
 	_c.Call.Run(func(args mock.Arguments) {
 		run(args[0].(string))
 	})
 	return _c
 }
 
-func (_c *MockJwtServiceInterface_ParseToken_Call) Return(s string, err error) *MockJwtServiceInterface_ParseToken_Call {
-	_c.Call.Return(s, err)
+func (_c *MockJwtServiceInterface_ValidateAndExtractClaims_Call) Return(claims *jwt.Claims, err error) *MockJwtServiceInterface_ValidateAndExtractClaims_Call {
+	_c.Call.Return(claims, err)
 	return _c
 }
 
-func (_c *MockJwtServiceInterface_ParseToken_Call) RunAndReturn(run func(token string) (string, error)) *MockJwtServiceInterface_ParseToken_Call {
-	_c.Call.Return(run)
-	return _c
-}
-
-// ValidateToken provides a mock function for the type MockJwtServiceInterface
-func (_mock *MockJwtServiceInterface) ValidateToken(token string) (string, error) {
-	ret := _mock.Called(token)
-
-	if len(ret) == 0 {
-		panic("no return value specified for ValidateToken")
-	}
-
-	var r0 string
-	var r1 error
-	if returnFunc, ok := ret.Get(0).(func(string) (string, error)); ok {
-		return returnFunc(token)
-	}
-	if returnFunc, ok := ret.Get(0).(func(string) string); ok {
-		r0 = returnFunc(token)
-	} else {
-		r0 = ret.Get(0).(string)
-	}
-	if returnFunc, ok := ret.Get(1).(func(string) error); ok {
-		r1 = returnFunc(token)
-	} else {
-		r1 = ret.Error(1)
-	}
-	return r0, r1
-}
-
-// MockJwtServiceInterface_ValidateToken_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'ValidateToken'
-type MockJwtServiceInterface_ValidateToken_Call struct {
-	*mock.Call
-}
-
-// ValidateToken is a helper method to define mock.On call
-//   - token
-func (_e *MockJwtServiceInterface_Expecter) ValidateToken(token interface{}) *MockJwtServiceInterface_ValidateToken_Call {
-	return &MockJwtServiceInterface_ValidateToken_Call{Call: _e.mock.On("ValidateToken", token)}
-}
-
-func (_c *MockJwtServiceInterface_ValidateToken_Call) Run(run func(token string)) *MockJwtServiceInterface_ValidateToken_Call {
-	_c.Call.Run(func(args mock.Arguments) {
-		run(args[0].(string))
-	})
-	return _c
-}
-
-func (_c *MockJwtServiceInterface_ValidateToken_Call) Return(s string, err error) *MockJwtServiceInterface_ValidateToken_Call {
-	_c.Call.Return(s, err)
-	return _c
-}
-
-func (_c *MockJwtServiceInterface_ValidateToken_Call) RunAndReturn(run func(token string) (string, error)) *MockJwtServiceInterface_ValidateToken_Call {
+func (_c *MockJwtServiceInterface_ValidateAndExtractClaims_Call) RunAndReturn(run func(givenToken string) (*jwt.Claims, error)) *MockJwtServiceInterface_ValidateAndExtractClaims_Call {
 	_c.Call.Return(run)
 	return _c
 }

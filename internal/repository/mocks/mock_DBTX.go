@@ -87,12 +87,7 @@ func (_e *MockDBTX_Expecter) Exec(context1 interface{}, s interface{}, ifaceVals
 
 func (_c *MockDBTX_Exec_Call) Run(run func(context1 context.Context, s string, ifaceVals ...interface{})) *MockDBTX_Exec_Call {
 	_c.Call.Run(func(args mock.Arguments) {
-		variadicArgs := make([]interface{}, len(args)-2)
-		for i, a := range args[2:] {
-			if a != nil {
-				variadicArgs[i] = a.(interface{})
-			}
-		}
+		variadicArgs := args[2].([]interface{})
 		run(args[0].(context.Context), args[1].(string), variadicArgs...)
 	})
 	return _c
@@ -158,12 +153,7 @@ func (_e *MockDBTX_Expecter) Query(context1 interface{}, s interface{}, ifaceVal
 
 func (_c *MockDBTX_Query_Call) Run(run func(context1 context.Context, s string, ifaceVals ...interface{})) *MockDBTX_Query_Call {
 	_c.Call.Run(func(args mock.Arguments) {
-		variadicArgs := make([]interface{}, len(args)-2)
-		for i, a := range args[2:] {
-			if a != nil {
-				variadicArgs[i] = a.(interface{})
-			}
-		}
+		variadicArgs := args[2].([]interface{})
 		run(args[0].(context.Context), args[1].(string), variadicArgs...)
 	})
 	return _c
@@ -220,12 +210,7 @@ func (_e *MockDBTX_Expecter) QueryRow(context1 interface{}, s interface{}, iface
 
 func (_c *MockDBTX_QueryRow_Call) Run(run func(context1 context.Context, s string, ifaceVals ...interface{})) *MockDBTX_QueryRow_Call {
 	_c.Call.Run(func(args mock.Arguments) {
-		variadicArgs := make([]interface{}, len(args)-2)
-		for i, a := range args[2:] {
-			if a != nil {
-				variadicArgs[i] = a.(interface{})
-			}
-		}
+		variadicArgs := args[2].([]interface{})
 		run(args[0].(context.Context), args[1].(string), variadicArgs...)
 	})
 	return _c
