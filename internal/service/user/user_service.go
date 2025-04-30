@@ -30,25 +30,14 @@ func NewUserService(queries repository.Querier, validator validation.ValidationS
 	}
 }
 
-type UserDto struct {
-	ID           uuid.UUID `json:"id"`
-	Username     string    `json:"username"`
-	Email        string    `json:"email"`
-	PasswordHash string    `json:"passwordHash"`
-}
-
 func NewUserDto(user repository.User) *UserDto {
 	return &UserDto{
 		ID:           uuid.UUID(user.ID.Bytes),
 		Username:     user.Username,
 		Email:        user.Email,
 		PasswordHash: user.PasswordHash,
+		Role:         UserRoleFromString(user.UserRole),
 	}
-}
-
-type UserCreatedDto struct {
-	Username string `json:"username"`
-	Email    string `json:"email"`
 }
 
 func NewUserCreatedDto(username, email string) *UserCreatedDto {
@@ -80,10 +69,28 @@ func (s *UserService) CreateUser(ctx context.Context, username, email, hashedPas
 			Username:     username,
 			Email:        email,
 			PasswordHash: hashedPassword,
+			UserRole:     UserRoleUser.Name,
 		},
 	)
 	if err != nil {
 		// Todo log error
+		return nil, err
+	}
+
+	return NewUserCreatedDto(user.Username, user.Email), nil
+}
+
+func (s *UserService) CreateAdminUser(username, email, hashedPassword string) (*UserCreatedDto, error) {
+	user, err := s.queries.CreateUser(
+		context.Background(),
+		repository.CreateUserParams{
+			Username:     username,
+			Email:        email,
+			PasswordHash: hashedPassword,
+			UserRole:     UserRoleAdmin.Name,
+		},
+	)
+	if err != nil {
 		return nil, err
 	}
 
