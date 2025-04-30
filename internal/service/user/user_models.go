@@ -1,6 +1,9 @@
 package user
 
-import "github.com/google/uuid"
+import (
+	"github.com/fgeck/go-register/internal/repository"
+	"github.com/google/uuid"
+)
 
 type UserCreatedDto struct {
 	Username string `json:"username"`
@@ -13,6 +16,16 @@ type UserDto struct {
 	Email        string    `json:"email"`
 	PasswordHash string    `json:"passwordHash"`
 	Role         UserRole  `json:"role"`
+}
+
+func NewUserDto(user repository.User) *UserDto {
+	return &UserDto{
+		ID:           uuid.UUID(user.ID.Bytes),
+		Username:     user.Username,
+		Email:        user.Email,
+		PasswordHash: user.PasswordHash,
+		Role:         UserRoleFromString(user.UserRole),
+	}
 }
 
 var (
