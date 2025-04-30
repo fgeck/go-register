@@ -9,6 +9,7 @@ import (
 
 	"github.com/fgeck/go-register/internal/service/config"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func createTempConfigFile(content string) (string, error) {
@@ -46,7 +47,7 @@ db:
 
 	t.Run("successfully loads valid config", func(t *testing.T) {
 		configFile, err := createTempConfigFile(validConfig)
-		assert.NoError(t, err)
+		require.NoError(t, err)
 		configPath := filepath.Dir(configFile)
 		defer os.Remove(configPath)
 
@@ -70,7 +71,7 @@ db:
 		config, err := loader.LoadConfig(configPath)
 
 		// Validate the results
-		assert.NoError(t, err)
+		require.NoError(t, err)
 		assert.Equal(t, "127.0.0.1", config.App.Host)
 		assert.Equal(t, "9090", config.App.Port)
 		assert.Equal(t, "change-m3-@$ap!", config.App.JwtSecret)
@@ -87,7 +88,7 @@ db:
 		loader := config.NewLoader()
 		config, err := loader.LoadConfig("nonexistent.yaml")
 
-		assert.Error(t, err)
+		require.Error(t, err)
 		assert.Nil(t, config)
 	})
 
@@ -105,19 +106,19 @@ db:
   invalid_field: true
 `
 		configPath, err := createTempConfigFile(invalidConfig)
-		assert.NoError(t, err)
+		require.NoError(t, err)
 		defer os.Remove(configPath)
 
 		loader := config.NewLoader()
 		config, err := loader.LoadConfig(configPath)
 
-		assert.Error(t, err)
+		require.Error(t, err)
 		assert.Nil(t, config)
 	})
 
 	t.Run("uses default values when environment variables are not set", func(t *testing.T) {
 		configFile, err := createTempConfigFile(validConfig)
-		assert.NoError(t, err)
+		require.NoError(t, err)
 		configPath := filepath.Dir(configFile)
 		defer os.Remove(configPath)
 
@@ -132,7 +133,7 @@ db:
 		config, err := loader.LoadConfig(configPath)
 
 		// Validate the results
-		assert.NoError(t, err)
+		require.NoError(t, err)
 		assert.Equal(t, "localhost", config.App.Host)
 		assert.Equal(t, "8080", config.App.Port)
 		assert.Equal(t, "change-m3-@$ap!", config.App.JwtSecret)

@@ -39,7 +39,7 @@ func (s *LoginRegisterService) LoginUser(ctx context.Context, email, password st
 		return "", customErrors.NewInternal("invalid password")
 	}
 
-	return s.jwtService.GenerateToken(user.ID)
+	return s.jwtService.GenerateToken(user)
 }
 
 func (s *LoginRegisterService) RegisterUser(

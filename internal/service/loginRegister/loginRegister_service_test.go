@@ -17,6 +17,7 @@ import (
 	userMocks "github.com/fgeck/go-register/internal/service/user/mocks"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
 )
 
 func setupLoginRegisterServiceTest(t *testing.T) (*userMocks.MockUserServiceInterface, *password.MockPasswordServiceInterface, *jwt.MockJwtServiceInterface, *loginRegister.LoginRegisterService) {
@@ -50,7 +51,7 @@ func TestLoginUser(t *testing.T) {
 
 		result, err := service.LoginUser(ctx, email, password)
 
-		assert.NoError(t, err)
+		require.NoError(t, err)
 		assert.Equal(t, token, result)
 
 		mockUserService.AssertExpectations(t)
@@ -65,7 +66,7 @@ func TestLoginUser(t *testing.T) {
 
 		result, err := service.LoginUser(ctx, email, password)
 
-		assert.Error(t, err)
+		require.Error(t, err)
 		assert.Empty(t, result)
 		assert.Equal(t, "user not found", err.Error())
 
@@ -83,7 +84,7 @@ func TestLoginUser(t *testing.T) {
 
 		result, err := service.LoginUser(ctx, email, password)
 
-		assert.Error(t, err)
+		require.Error(t, err)
 		assert.Empty(t, result)
 		assert.Equal(t, "InternalError: invalid password", err.Error())
 
@@ -112,7 +113,7 @@ func TestRegisterUser(t *testing.T) {
 
 		result, err := service.RegisterUser(ctx, username, email, password)
 
-		assert.NoError(t, err)
+		require.NoError(t, err)
 		assert.NotNil(t, result)
 		assert.Equal(t, username, result.Username)
 		assert.Equal(t, email, result.Email)
@@ -128,7 +129,7 @@ func TestRegisterUser(t *testing.T) {
 
 		result, err := service.RegisterUser(ctx, username, email, password)
 
-		assert.Error(t, err)
+		require.Error(t, err)
 		assert.Nil(t, result)
 
 		// Check for UserFacingError
@@ -147,7 +148,7 @@ func TestRegisterUser(t *testing.T) {
 
 		result, err := service.RegisterUser(ctx, username, email, password)
 
-		assert.Error(t, err)
+		require.Error(t, err)
 		assert.Nil(t, result)
 
 		// Check for UserFacingError
@@ -167,7 +168,7 @@ func TestRegisterUser(t *testing.T) {
 
 		result, err := service.RegisterUser(ctx, username, email, password)
 
-		assert.Error(t, err)
+		require.Error(t, err)
 		assert.Nil(t, result)
 		assert.Equal(t, "failed to salt and hash password: hashing error", err.Error())
 

@@ -7,6 +7,7 @@ import (
 
 	validation "github.com/fgeck/go-register/internal/service/validation"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestValidateEmail(t *testing.T) {
@@ -24,9 +25,9 @@ func TestValidateEmail(t *testing.T) {
 	for _, test := range tests {
 		err := vs.ValidateEmail(test.email)
 		if test.expected == nil {
-			assert.NoError(t, err, "expected no error for email: %s", test.email)
+			require.NoError(t, err, "expected no error for email: %s", test.email)
 		} else {
-			assert.Error(t, err, "expected an error for email: %s", test.email)
+			require.Error(t, err, "expected an error for email: %s", test.email)
 			assert.Equal(t, test.expected, err, "unexpected error for email: %s", test.email)
 		}
 	}
@@ -49,9 +50,9 @@ func TestValidatePassword(t *testing.T) {
 	for _, test := range tests {
 		err := vs.ValidatePassword(test.password)
 		if test.expected == nil {
-			assert.NoError(t, err, "expected no error for password: %s", test.password)
+			require.NoError(t, err, "expected no error for password: %s", test.password)
 		} else {
-			assert.Error(t, err, "expected an error for password: %s", test.password)
+			require.Error(t, err, "expected an error for password: %s", test.password)
 			assert.Equal(t, test.expected, err, "unexpected error for password: %s", test.password)
 		}
 	}
@@ -73,9 +74,9 @@ func TestValidateUsername(t *testing.T) {
 	for _, test := range tests {
 		err := vs.ValidateUsername(test.username)
 		if test.expected == nil {
-			assert.NoError(t, err, "expected no error for username: %s", test.username)
+			require.NoError(t, err, "expected no error for username: %s", test.username)
 		} else {
-			assert.Error(t, err, "expected an error for username: %s", test.username)
+			require.Error(t, err, "expected an error for username: %s", test.username)
 			assert.Equal(t, test.expected, err, "unexpected error for username: %s", test.username)
 		}
 	}

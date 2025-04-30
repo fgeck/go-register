@@ -16,6 +16,7 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
 )
 
 func setupUserServiceTest(t *testing.T) (*repositoryMocks.MockQuerier, *validationMocks.MockValidationServiceInterface, *user.UserService) {
@@ -41,7 +42,7 @@ func TestCreateUser(t *testing.T) {
 
 		userDto, err := userService.CreateUser(ctx, username, email, passwordHash)
 
-		assert.NoError(t, err)
+		require.NoError(t, err)
 		assert.NotNil(t, userDto)
 		assert.Equal(t, username, userDto.Username)
 		assert.Equal(t, email, userDto.Email)
@@ -55,7 +56,7 @@ func TestCreateUser(t *testing.T) {
 
 		userDto, err := userService.CreateUser(ctx, username, email, passwordHash)
 
-		assert.Error(t, err)
+		require.Error(t, err)
 		assert.Nil(t, userDto)
 		assert.Equal(t, "database error", err.Error())
 
@@ -76,7 +77,7 @@ func TestValidateCreateUserParams(t *testing.T) {
 
 		err := userService.ValidateCreateUserParams(username, email, password)
 
-		assert.NoError(t, err)
+		require.NoError(t, err)
 
 		mockValidator.AssertExpectations(t)
 	})
@@ -87,7 +88,7 @@ func TestValidateCreateUserParams(t *testing.T) {
 
 		err := userService.ValidateCreateUserParams(username, email, password)
 
-		assert.Error(t, err)
+		require.Error(t, err)
 
 		// Check for UserFacingError
 		ufe, ok := err.(*userfacing_errors.UserFacingError)
@@ -104,7 +105,7 @@ func TestValidateCreateUserParams(t *testing.T) {
 
 		err := userService.ValidateCreateUserParams(username, email, password)
 
-		assert.Error(t, err)
+		require.Error(t, err)
 
 		// Check for UserFacingError
 		ufe, ok := err.(*userfacing_errors.UserFacingError)
@@ -122,7 +123,7 @@ func TestValidateCreateUserParams(t *testing.T) {
 
 		err := userService.ValidateCreateUserParams(username, email, password)
 
-		assert.Error(t, err)
+		require.Error(t, err)
 
 		// Check for UserFacingError
 		ufe, ok := err.(*userfacing_errors.UserFacingError)
@@ -143,7 +144,7 @@ func TestUserExistsByEmail(t *testing.T) {
 
 		exists, err := userService.UserExistsByEmail(ctx, email)
 
-		assert.NoError(t, err)
+		require.NoError(t, err)
 		assert.True(t, exists)
 
 		mockQueries.AssertExpectations(t)
@@ -155,7 +156,7 @@ func TestUserExistsByEmail(t *testing.T) {
 
 		exists, err := userService.UserExistsByEmail(ctx, email)
 
-		assert.NoError(t, err)
+		require.NoError(t, err)
 		assert.False(t, exists)
 
 		mockQueries.AssertExpectations(t)
@@ -167,7 +168,7 @@ func TestUserExistsByEmail(t *testing.T) {
 
 		exists, err := userService.UserExistsByEmail(ctx, email)
 
-		assert.Error(t, err)
+		require.Error(t, err)
 		assert.False(t, exists)
 		assert.Equal(t, "database error", err.Error())
 
@@ -189,7 +190,7 @@ func TestGetUserByEmail(t *testing.T) {
 
 		userDto, err := userService.GetUserByEmail(ctx, email)
 
-		assert.NoError(t, err)
+		require.NoError(t, err)
 		assert.NotNil(t, userDto)
 		assert.Equal(t, "testuser", userDto.Username)
 		assert.Equal(t, email, userDto.Email)
@@ -203,7 +204,7 @@ func TestGetUserByEmail(t *testing.T) {
 
 		userDto, err := userService.GetUserByEmail(ctx, email)
 
-		assert.Error(t, err)
+		require.Error(t, err)
 		assert.Nil(t, userDto)
 		assert.Equal(t, err, user.ErrUserNotFound)
 
@@ -216,7 +217,7 @@ func TestGetUserByEmail(t *testing.T) {
 
 		_, err := userService.GetUserByEmail(ctx, email)
 
-		assert.Error(t, err)
+		require.Error(t, err)
 		assert.Equal(t, "database error", err.Error())
 
 		mockQueries.AssertExpectations(t)

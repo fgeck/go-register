@@ -14,15 +14,15 @@ import (
 )
 
 const (
-	TWENTY_FOUR_HOURS_IN_MS = 24 * 1000 * 60 * 60
-	ISSUER                  = "go-register"
+	TWENTY_FOUR_HOURS_IN_SECONDS = 24 * 60 * 60
+	ISSUER                       = "go-register"
 )
 
 func InitServer(echoServer *echo.Echo, queries *repository.Queries, config *config.Config) {
 	validator := validation.NewValidationService()
 	userService := user.NewUserService(queries, validator)
 	passwordService := password.NewPasswordService()
-	jwtService := jwt.NewJwtService(config.App.JwtSecret, ISSUER, TWENTY_FOUR_HOURS_IN_MS)
+	jwtService := jwt.NewJwtService(config.App.JwtSecret, ISSUER, TWENTY_FOUR_HOURS_IN_SECONDS)
 	loginRegisterService := loginRegister.NewLoginRegisterService(userService, passwordService, jwtService)
 	registerHandler := NewRegisterHandler(loginRegisterService)
 	loginHandler := NewLoginHandler(loginRegisterService)
@@ -31,6 +31,7 @@ func InitServer(echoServer *echo.Echo, queries *repository.Queries, config *conf
 	echoServer.GET("/", HomeHandler)
 	echoServer.GET("/login", loginHandler.LoginRegisterContainerHandler)
 	echoServer.GET("/loginForm", loginHandler.LoginFormHandler)
+	echoServer.POST("/login", loginHandler.LoginHandler)
 	echoServer.GET("/registerForm", registerHandler.RegisterFormHandler)
 	echoServer.POST("/register", registerHandler.RegisterUserHandler)
 	log.Println("All handlers registered")

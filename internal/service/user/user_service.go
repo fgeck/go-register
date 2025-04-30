@@ -5,8 +5,6 @@ import (
 	"database/sql"
 	"errors"
 
-	"github.com/google/uuid"
-
 	"github.com/fgeck/go-register/internal/repository"
 	"github.com/fgeck/go-register/internal/service/validation"
 )
@@ -28,27 +26,6 @@ func NewUserService(queries repository.Querier, validator validation.ValidationS
 		queries:   queries,
 		validator: validator,
 	}
-}
-
-type UserDto struct {
-	ID           uuid.UUID `json:"id"`
-	Username     string    `json:"username"`
-	Email        string    `json:"email"`
-	PasswordHash string    `json:"passwordHash"`
-}
-
-func NewUserDto(user repository.User) *UserDto {
-	return &UserDto{
-		ID:           uuid.UUID(user.ID.Bytes),
-		Username:     user.Username,
-		Email:        user.Email,
-		PasswordHash: user.PasswordHash,
-	}
-}
-
-type UserCreatedDto struct {
-	Username string `json:"username"`
-	Email    string `json:"email"`
 }
 
 func NewUserCreatedDto(username, email string) *UserCreatedDto {
@@ -80,6 +57,7 @@ func (s *UserService) CreateUser(ctx context.Context, username, email, hashedPas
 			Username:     username,
 			Email:        email,
 			PasswordHash: hashedPassword,
+			UserRole:     UserRoleUser.Name,
 		},
 	)
 	if err != nil {
