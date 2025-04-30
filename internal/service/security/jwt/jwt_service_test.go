@@ -45,9 +45,11 @@ U5IfQg0LmP5ruurcoJ6V8MSifkrPan9m3Uz+S1ezJNr/XV4T5QTD04zCnE6yoJMr
 )
 
 func TestGenerateToken(t *testing.T) {
+	t.Parallel()
 	jwtService := jwt.NewJwtService(TEST_SECRET, "test-issuer", 3600)
 
 	t.Run("Valid Input", func(t *testing.T) {
+		t.Parallel()
 		userDto := &user.UserDto{
 			ID:   uuid.New(),
 			Role: user.UserRoleAdmin,
@@ -59,6 +61,7 @@ func TestGenerateToken(t *testing.T) {
 	})
 
 	t.Run("Empty User ID", func(t *testing.T) {
+		t.Parallel()
 		userDto := &user.UserDto{
 			ID:   uuid.Nil,
 			Role: user.UserRoleAdmin,
@@ -70,6 +73,7 @@ func TestGenerateToken(t *testing.T) {
 	})
 
 	t.Run("Empty User Role", func(t *testing.T) {
+		t.Parallel()
 		userDto := &user.UserDto{
 			ID:   uuid.New(),
 			Role: user.UserRole{Name: ""},
@@ -82,9 +86,11 @@ func TestGenerateToken(t *testing.T) {
 }
 
 func TestValidateAndExtractClaims(t *testing.T) {
+	t.Parallel()
 	jwtService := jwt.NewJwtService(TEST_SECRET, "test-issuer", 3600)
 
 	t.Run("Valid Token", func(t *testing.T) {
+		t.Parallel()
 		userID := uuid.New()
 		userDto := &user.UserDto{
 			ID:   userID,
@@ -101,6 +107,7 @@ func TestValidateAndExtractClaims(t *testing.T) {
 	})
 
 	t.Run("Invalid Token", func(t *testing.T) {
+		t.Parallel()
 		token := "invalid-token"
 
 		extractedUser, err := jwtService.ValidateAndExtractClaims(token)
@@ -109,6 +116,7 @@ func TestValidateAndExtractClaims(t *testing.T) {
 	})
 
 	t.Run("No HMAC Signing Method Used", func(t *testing.T) {
+		t.Parallel()
 		privateKey, err := jwtGo.ParseRSAPrivateKeyFromPEM([]byte(TEST_PRIVEATE_KEY))
 		assert.NoError(t, err)
 
@@ -134,6 +142,7 @@ func TestValidateAndExtractClaims(t *testing.T) {
 	})
 
 	t.Run("No User ID in Parsed Token", func(t *testing.T) {
+		t.Parallel()
 		// Create a token without a USER_ID claim
 		claims := jwtGo.MapClaims{
 			"userRole": "admin",
@@ -153,6 +162,7 @@ func TestValidateAndExtractClaims(t *testing.T) {
 	})
 
 	t.Run("No User Role in Parsed Token", func(t *testing.T) {
+		t.Parallel()
 		// Create a token without a USER_ROLE claim
 		claims := jwtGo.MapClaims{
 			"userId": uuid.New().String(),

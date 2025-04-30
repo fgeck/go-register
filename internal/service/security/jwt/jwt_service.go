@@ -1,6 +1,7 @@
 package jwt
 
 import (
+	"errors"
 	"fmt"
 	"time"
 
@@ -28,12 +29,20 @@ func NewJwtService(secretKey, issuer string, expiration int64) *JwtService {
 	}
 }
 
+var (
+	ErrEmptyUserRole        = errors.New("userRole role is empty")
+	ErrEmptyUserId          = errors.New("userId is empty")
+	ErrInvalidTokenClaims   = errors.New("invalid token claims")
+	ErrMissingUserIdClaim   = errors.New("missing userId claim")
+	ErrMissingUserRoleClaim = errors.New("missing userRole claim")
+)
+
 func (s *JwtService) GenerateToken(user *user.UserDto) (string, error) {
 	if user.ID == uuid.Nil || user.ID.String() == "" {
-		return "", fmt.Errorf("userID is empty")
+		return "", ErrEmptyUserId
 	}
 	if user.Role.Name == "" {
-		return "", fmt.Errorf("userRole is empty")
+		return "", ErrEmptyUserRole
 	}
 
 	now := time.Now()
@@ -68,17 +77,17 @@ func (s *JwtService) ValidateAndExtractClaims(givenToken string) (*Claims, error
 		return s.buildClaims(claims)
 	}
 
-	return nil, fmt.Errorf("invalid token claims")
+	return nil, ErrInvalidTokenClaims
 }
 
 func (s *JwtService) buildClaims(jwtClaims jwt.MapClaims) (*Claims, error) {
 	userId, ok := jwtClaims[USER_ID]
 	if !ok {
-		return nil, fmt.Errorf("missing userId claim")
+		return nil, ErrMissingUserIdClaim
 	}
 	userRole, ok := jwtClaims[USER_ROLE]
 	if !ok {
-		return nil, fmt.Errorf("missing userRole claim")
+		return nil, ErrMissingUserRoleClaim
 	}
 	if userId == nil || userRole == nil {
 		return nil, fmt.Errorf("userId or userRole claim is nil. claims: %v", jwtClaims)

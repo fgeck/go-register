@@ -91,6 +91,7 @@ func createAdminUser(ctx context.Context, queries *repository.Queries, cfg *conf
 		Username:     adminName,
 		Email:        adminEmail,
 		PasswordHash: hashedPassword,
+		UserRole:     "admin",
 	}
 	user, err := queries.CreateUser(ctx, userParams)
 	if err != nil {
