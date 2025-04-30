@@ -1,8 +1,9 @@
 package jwt
 
 import (
-	"errors"
+	"time"
 
+	"github.com/dgrijalva/jwt-go"
 	"github.com/google/uuid"
 )
 
@@ -11,7 +12,6 @@ type JwtServiceInterface interface {
 	ValidateToken(token string) (string, error)
 	ParseToken(token string) (string, error)
 	ExtractClaims(token string) (map[string]interface{}, error)
-	ExtractUserId(token string) (string, error)
 }
 
 type JwtService struct {
@@ -29,24 +29,25 @@ func NewJwtService(secretKey, issuer string, expiration int64) *JwtService {
 }
 
 func (s *JwtService) GenerateToken(userId uuid.UUID) (string, error) {
-	// Implementation for generating JWT token
-	return "", ErrPlaceholder
-}
-func (s *JwtService) ValidateToken(token string) (string, error) {
-	// Implementation for validating JWT token
-	return "", ErrPlaceholder
-}
-func (s *JwtService) ParseToken(token string) (string, error) {
-	// Implementation for parsing JWT token
-	return "", ErrPlaceholder
-}
-func (s *JwtService) ExtractClaims(token string) (map[string]interface{}, error) {
-	// Implementation for extracting claims from JWT token
-	return nil, ErrPlaceholder
-}
-func (s *JwtService) ExtractUserId(token string) (string, error) {
-	// Implementation for extracting user ID from JWT token
-	return "", ErrPlaceholder
+	claims := jwt.MapClaims{
+		"userId": userId.String(),
+		"issuer": s.issuer,
+		"exp":    time.Now().Add(time.Duration(s.expiration) * time.Second).Unix(),
+	}
+
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	return token.SignedString([]byte(s.secretKey))
 }
 
-var ErrPlaceholder = errors.New("placeholder error")
+func (s *JwtService) ValidateToken(token string) (string, error) {
+	return "", nil
+}
+
+func (s *JwtService) ParseToken(token string) (string, error) {
+	return "", nil
+}
+
+func (s *JwtService) ExtractClaims(token string) (map[string]interface{}, error) {
+	return map[string]interface{}{}, nil
+}
+
