@@ -8,7 +8,9 @@ linters:
   disable:
     - depguard
     - godox
+    - nlreturn
     - wrapcheck
+    - wsl
   settings:
     cyclop:
       max-complexity: 15
