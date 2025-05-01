@@ -92,23 +92,23 @@ func (_c *MockJwtServiceInterface_GenerateToken_Call) RunAndReturn(run func(user
 }
 
 // ValidateAndExtractClaims provides a mock function for the type MockJwtServiceInterface
-func (_mock *MockJwtServiceInterface) ValidateAndExtractClaims(givenToken string) (*jwt.Claims, error) {
+func (_mock *MockJwtServiceInterface) ValidateAndExtractClaims(givenToken string) (*jwt.JwtCustomClaims, error) {
 	ret := _mock.Called(givenToken)
 
 	if len(ret) == 0 {
 		panic("no return value specified for ValidateAndExtractClaims")
 	}
 
-	var r0 *jwt.Claims
+	var r0 *jwt.JwtCustomClaims
 	var r1 error
-	if returnFunc, ok := ret.Get(0).(func(string) (*jwt.Claims, error)); ok {
+	if returnFunc, ok := ret.Get(0).(func(string) (*jwt.JwtCustomClaims, error)); ok {
 		return returnFunc(givenToken)
 	}
-	if returnFunc, ok := ret.Get(0).(func(string) *jwt.Claims); ok {
+	if returnFunc, ok := ret.Get(0).(func(string) *jwt.JwtCustomClaims); ok {
 		r0 = returnFunc(givenToken)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*jwt.Claims)
+			r0 = ret.Get(0).(*jwt.JwtCustomClaims)
 		}
 	}
 	if returnFunc, ok := ret.Get(1).(func(string) error); ok {
@@ -137,12 +137,12 @@ func (_c *MockJwtServiceInterface_ValidateAndExtractClaims_Call) Run(run func(gi
 	return _c
 }
 
-func (_c *MockJwtServiceInterface_ValidateAndExtractClaims_Call) Return(claims *jwt.Claims, err error) *MockJwtServiceInterface_ValidateAndExtractClaims_Call {
-	_c.Call.Return(claims, err)
+func (_c *MockJwtServiceInterface_ValidateAndExtractClaims_Call) Return(jwtCustomClaims *jwt.JwtCustomClaims, err error) *MockJwtServiceInterface_ValidateAndExtractClaims_Call {
+	_c.Call.Return(jwtCustomClaims, err)
 	return _c
 }
 
-func (_c *MockJwtServiceInterface_ValidateAndExtractClaims_Call) RunAndReturn(run func(givenToken string) (*jwt.Claims, error)) *MockJwtServiceInterface_ValidateAndExtractClaims_Call {
+func (_c *MockJwtServiceInterface_ValidateAndExtractClaims_Call) RunAndReturn(run func(givenToken string) (*jwt.JwtCustomClaims, error)) *MockJwtServiceInterface_ValidateAndExtractClaims_Call {
 	_c.Call.Return(run)
 	return _c
 }

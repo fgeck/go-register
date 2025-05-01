@@ -19,14 +19,18 @@ const (
 )
 
 func InitServer(echoServer *echo.Echo, queries *repository.Queries, config *config.Config) {
+	// Services
 	validator := validation.NewValidationService()
 	userService := user.NewUserService(queries, validator)
 	passwordService := password.NewPasswordService()
 	jwtService := jwt.NewJwtService(config.App.JwtSecret, ISSUER, TWENTY_FOUR_HOURS_IN_SECONDS)
 	loginRegisterService := loginRegister.NewLoginRegisterService(userService, passwordService, jwtService)
+	// Handlers
 	registerHandler := NewRegisterHandler(loginRegisterService)
 	loginHandler := NewLoginHandler(loginRegisterService)
+	// Middlewares
 
+	// Setup Server
 	echoServer.Static("/", "public")
 	echoServer.GET("/", HomeHandler)
 	echoServer.GET("/login", loginHandler.LoginRegisterContainerHandler)

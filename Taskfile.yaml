@@ -19,7 +19,7 @@ tasks:
   install-dev-tools:
     desc: Install development tools
     cmds:
-      - brew install sqlc tailwindcss mockery
+      - brew install sqlc tailwindcss mockery golangci-lint
       - go install github.com/a-h/templ/cmd/templ@latest
       - go install github.com/air-verse/air@latest
     preconditions:
@@ -59,18 +59,26 @@ tasks:
   build:
     desc: Build the project
     cmds:
-      - go build -o bin/go-register ./cmd/main.go
+      - go build -o bin/go-register ./cmd/web/main.go
     preconditions:
       - which go
 
+  golangci-lint:
+    desc: Run golangci-lint
+    cmds:
+      - golangci-lint run --timeout 2m
+    preconditions:
+      - which golangci-lint
+
   unittest: 
-    desc: Run unit tests 
+    desc: Run unit-tests 
     cmds:
       - go test -v -tags=unittest ./...
     preconditions:
       - which go
+
   integrationtest: 
-    desc: Run unit tests 
+    desc: Run integration-tests 
     cmds:
       - go test -v -tags=integrationtest ./...
     preconditions:
