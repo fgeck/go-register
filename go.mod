@@ -2,8 +2,7 @@ module github.com/fgeck/go-register
 
 go 1.24.1
 
-require (
-	github.com/dgrijalva/jwt-go v3.2.0+incompatible
+require (	
 	github.com/google/uuid v1.6.0
 	github.com/jackc/pgx/v5 v5.7.4
 	github.com/spf13/viper v1.20.1
@@ -15,6 +14,7 @@ require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/fsnotify/fsnotify v1.8.0 // indirect
 	github.com/go-viper/mapstructure/v2 v2.2.1 // indirect
+	github.com/golang-jwt/jwt/v5 v5.2.2 // indirect
 	github.com/jackc/puddle/v2 v2.2.2 // indirect
 	github.com/pelletier/go-toml/v2 v2.2.3 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect

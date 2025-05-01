@@ -6,7 +6,8 @@ import (
 	"testing"
 	"time"
 
-	jwtGo "github.com/dgrijalva/jwt-go"
+	gojwt "github.com/golang-jwt/jwt/v5"
+
 	"github.com/fgeck/go-register/internal/service/security/jwt"
 	"github.com/fgeck/go-register/internal/service/user"
 	"github.com/google/uuid"
@@ -101,7 +102,7 @@ func TestValidateAndExtractClaims(t *testing.T) {
 		privateKey := generatePrivateKey(t)
 
 		// Create a token with RS256 signing method
-		claims := jwtGo.MapClaims{
+		claims := gojwt.MapClaims{
 			"userId":   uuid.New().String(),
 			"userRole": "admin",
 			"iss":      "test-issuer",
@@ -110,7 +111,7 @@ func TestValidateAndExtractClaims(t *testing.T) {
 			"nbf":      time.Now().Unix(),
 		}
 
-		token := jwtGo.NewWithClaims(jwtGo.SigningMethodRS256, claims)
+		token := gojwt.NewWithClaims(gojwt.SigningMethodRS256, claims)
 		signedToken, err := token.SignedString(privateKey)
 		require.NoError(t, err)
 
@@ -124,14 +125,14 @@ func TestValidateAndExtractClaims(t *testing.T) {
 	t.Run("No User ID in Parsed Token", func(t *testing.T) {
 		t.Parallel()
 		// Create a token without a USER_ID claim
-		claims := jwtGo.MapClaims{
+		claims := gojwt.MapClaims{
 			"userRole": "admin",
 			"iss":      "test-issuer",
 			"iat":      time.Now().Unix(),
 			"exp":      time.Now().Add(time.Hour).Unix(),
 		}
 
-		token := jwtGo.NewWithClaims(jwtGo.SigningMethodHS256, claims)
+		token := gojwt.NewWithClaims(gojwt.SigningMethodHS256, claims)
 		signedToken, err := token.SignedString([]byte(TEST_SECRET))
 		require.NoError(t, err)
 
@@ -144,14 +145,14 @@ func TestValidateAndExtractClaims(t *testing.T) {
 	t.Run("No User Role in Parsed Token", func(t *testing.T) {
 		t.Parallel()
 		// Create a token without a USER_ROLE claim
-		claims := jwtGo.MapClaims{
+		claims := gojwt.MapClaims{
 			"userId": uuid.New().String(),
 			"iss":    "test-issuer",
 			"iat":    time.Now().Unix(),
 			"exp":    time.Now().Add(time.Hour).Unix(),
 		}
 
-		token := jwtGo.NewWithClaims(jwtGo.SigningMethodHS256, claims)
+		token := gojwt.NewWithClaims(gojwt.SigningMethodHS256, claims)
 		signedToken, err := token.SignedString([]byte(TEST_SECRET))
 		require.NoError(t, err)
 
