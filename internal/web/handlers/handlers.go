@@ -10,7 +10,6 @@ import (
 	"github.com/fgeck/go-register/internal/service/security/password"
 	"github.com/fgeck/go-register/internal/service/user"
 	"github.com/fgeck/go-register/internal/service/validation"
-	"github.com/fgeck/go-register/internal/web/middleware"
 	"github.com/labstack/echo/v4"
 )
 
@@ -30,7 +29,6 @@ func InitServer(echoServer *echo.Echo, queries *repository.Queries, config *conf
 	registerHandler := NewRegisterHandler(loginRegisterService)
 	loginHandler := NewLoginHandler(loginRegisterService)
 	// Middlewares
-	authMiddleware := middleware.NewAuthMiddleware(jwtService)
 
 	// Setup Server
 	echoServer.Static("/", "public")
@@ -40,6 +38,5 @@ func InitServer(echoServer *echo.Echo, queries *repository.Queries, config *conf
 	echoServer.POST("/login", loginHandler.LoginHandler)
 	echoServer.GET("/registerForm", registerHandler.RegisterFormHandler)
 	echoServer.POST("/register", registerHandler.RegisterUserHandler)
-	echoServer.Use(authMiddleware.Authenticate)
 	log.Println("All handlers registered")
 }

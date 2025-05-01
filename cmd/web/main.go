@@ -11,10 +11,10 @@ import (
 	"os/signal"
 	"time"
 
-	"github.com/fgeck/go-register/internal/handlers"
 	"github.com/fgeck/go-register/internal/repository"
 	"github.com/fgeck/go-register/internal/service/config"
 	"github.com/fgeck/go-register/internal/service/security/password"
+	"github.com/fgeck/go-register/internal/web/handlers"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/labstack/echo/v4"

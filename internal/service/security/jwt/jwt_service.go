@@ -63,7 +63,6 @@ func (s *JwtService) GenerateToken(user *user.UserDto) (string, error) {
 }
 
 func (s *JwtService) ValidateAndExtractClaims(givenToken string) (*JwtCustomClaims, error) {
-
 	token, err := gojwt.ParseWithClaims(
 		givenToken,
 		&JwtCustomClaims{},
