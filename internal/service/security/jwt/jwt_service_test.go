@@ -1,3 +1,5 @@
+//go:build unittest
+
 package jwt_test
 
 import (
