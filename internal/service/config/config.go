@@ -43,12 +43,12 @@ func NewLoader() *ConfigLoader {
 	}
 }
 
-func (c *ConfigLoader) LoadConfig(configPath string) (*Config, error) {
-	c.viper.SetConfigName("config")
+func (c *ConfigLoader) LoadConfig(cfgDirPath string) (*Config, error) {
+	c.viper.SetConfigName("config.yaml")
 	c.viper.SetConfigType("yaml")
 	c.viper.AddConfigPath(".")
 	c.viper.AddConfigPath("./cmd/web")
-	c.viper.AddConfigPath(configPath)
+	c.viper.AddConfigPath(cfgDirPath)
 
 	// Enable automatic environment variable binding
 	c.viper.AutomaticEnv()
