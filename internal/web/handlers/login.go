@@ -44,7 +44,7 @@ func (h *LoginHandler) LoginFormHandler(ctx echo.Context) error {
 }
 
 func (h *LoginHandler) LoginHandler(ctx echo.Context) error {
-	username := ctx.FormValue("username")
+	username := ctx.FormValue("email")
 	password := ctx.FormValue("password")
 
 	token, err := h.loginRegisterService.LoginUser(ctx.Request().Context(), username, password)
@@ -58,9 +58,19 @@ func (h *LoginHandler) LoginHandler(ctx echo.Context) error {
 
 		return wrappedErr
 	}
+	ctx.SetCookie(
+		&http.Cookie{
+			Name:     "token",
+			Value:    token,
+			Path:     "/",                  // Cookie is valid for the entire site
+			HttpOnly: true,                 // Prevent access via JavaScript
+			Secure:   true,                 // Only send the cookie over HTTPS
+			SameSite: http.SameSiteLaxMode, // Prevent CSRF attacks
+		},
+	)
 
-	if jsonErr := ctx.JSON(http.StatusOK, map[string]string{"token": token}); jsonErr != nil {
-		return fmt.Errorf("failed to send success response: %w", jsonErr)
+	if err := ctx.String(http.StatusOK, "success"); err != nil {
+		return fmt.Errorf("failed to send success response: %w", err)
 	}
 
 	return nil

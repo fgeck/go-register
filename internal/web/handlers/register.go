@@ -44,11 +44,10 @@ func (r *RegisterHandler) RegisterUserHandler(ctx echo.Context) error {
 				return fmt.Errorf("failed to send error response: %w", jsonErr)
 			}
 
-			return nil
+			return err
 		}
-
 		return ctx.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to register user"})
 	}
 
-	return ctx.JSON(http.StatusOK, map[string]any{"user": user})
+	return ctx.JSON(http.StatusCreated, user)
 }

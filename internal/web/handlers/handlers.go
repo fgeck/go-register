@@ -1,8 +1,6 @@
 package handlers
 
 import (
-	"log"
-
 	"github.com/fgeck/go-register/internal/repository"
 	"github.com/fgeck/go-register/internal/service/config"
 	"github.com/fgeck/go-register/internal/service/loginRegister"
@@ -18,7 +16,7 @@ const (
 	ISSUER                       = "go-register"
 )
 
-func InitServer(echoServer *echo.Echo, queries *repository.Queries, config *config.Config) {
+func InitServer(e *echo.Echo, queries *repository.Queries, config *config.Config) {
 	// Services
 	validator := validation.NewValidationService()
 	userService := user.NewUserService(queries, validator)
@@ -30,13 +28,21 @@ func InitServer(echoServer *echo.Echo, queries *repository.Queries, config *conf
 	loginHandler := NewLoginHandler(loginRegisterService)
 	// Middlewares
 
-	// Setup Server
-	echoServer.Static("/", "public")
-	echoServer.GET("/", HomeHandler)
-	echoServer.GET("/login", loginHandler.LoginRegisterContainerHandler)
-	echoServer.GET("/loginForm", loginHandler.LoginFormHandler)
-	echoServer.POST("/login", loginHandler.LoginHandler)
-	echoServer.GET("/registerForm", registerHandler.RegisterFormHandler)
-	echoServer.POST("/register", registerHandler.RegisterUserHandler)
-	log.Println("All handlers registered")
+	// Public Routes
+	e.Static("/", "public")
+	e.GET("/", HomeHandler)
+	e.GET("/login", loginHandler.LoginRegisterContainerHandler)
+	e.GET("/loginForm", loginHandler.LoginFormHandler)
+	e.POST("/api/login", loginHandler.LoginHandler)
+	e.GET("/registerForm", registerHandler.RegisterFormHandler)
+	e.POST("/api/register", registerHandler.RegisterUserHandler)
+
+	// Protected Routes (requires authentication)
+	// protectedGroup := e.Group("/api/protected")
+	// protectedGroup.Use(authMiddleware)
+	// protectedGroup.GET("/profile", ProfileHandler)
+
+	// Admin Routes (requires "UserRole" == "admin")
+	// adminGroup := e.Group("/api/admin")
+	// adminGroup.Use(authMiddleware, adminMiddleware)
 }
