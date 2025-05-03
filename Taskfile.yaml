@@ -73,14 +73,14 @@ tasks:
   unittest: 
     desc: Run unit-tests 
     cmds:
-      - go test -v -tags=unittest ./...
+      - go test -tags=unittest ./...
     preconditions:
       - which go
 
   integrationtest: 
     desc: Run integration-tests 
     cmds:
-      - go test -v -tags=integrationtest ./...
+      - go test -tags=integrationtest ./...
     preconditions:
       - which go
 

@@ -16,10 +16,18 @@ linters:
     - wrapcheck
     - wsl
   settings:
+    errcheck:
+      exclude-functions:
+        - os.Setenv
+        - os.Unsetenv
     cyclop:
       max-complexity: 15
     gocyclo:
       min-complexity: 15 # Set the threshold for cyclomatic complexity
+    ireturn:
+      allow:
+        - (or|er)$
+        - error
     misspell:
       locale: US # Use US English for spell checking
     revive:
