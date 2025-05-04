@@ -14,6 +14,9 @@ packages:
   github.com/fgeck/go-register/internal/repository:
     config:
       all: true
+  github.com/fgeck/go-register/internal/service/config:
+    config:
+      all: true      
   github.com/fgeck/go-register/internal/service/loginRegister:
     config:
       all: true

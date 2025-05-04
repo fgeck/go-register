@@ -28,7 +28,6 @@ air &
 * [templ](https://github.com/a-h/templ)
 * [air](https://github.com/air-verse/air)
 * [tailwindcss](https://tailwindcss.com/)
-* [daisyui](https://daisyui.com/) ?
 
 ## ToDo
 
