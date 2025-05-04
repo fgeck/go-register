@@ -75,7 +75,7 @@ func StartPostgres(postgresCfg PostgresConfig) (testcontainers.Container, string
 
 func getInitScripts() ([]string, error) {
 	var initScripts []string
-	err := filepath.Walk("../migrations", func(path string, info os.FileInfo, err error) error {
+	err := filepath.Walk("../migrations/postgresql", func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
 		}

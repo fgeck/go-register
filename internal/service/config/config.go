@@ -17,11 +17,8 @@ type AppConfig struct {
 }
 
 type DbConfig struct {
-	Host     string `mapstructure:"host"`
-	Port     string `mapstructure:"port"`
-	User     string `mapstructure:"user"`
-	Password string `mapstructure:"password"`
-	Database string `mapstructure:"database"`
+	Persistence string `mapstructure:"persistence"` // memory or file
+	MigrationsPath string `mapstructure:"migrationsPath"`
 }
 
 type Config struct {

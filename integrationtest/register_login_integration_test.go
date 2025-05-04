@@ -19,43 +19,14 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"github.com/testcontainers/testcontainers-go"
 )
-
-const (
-	POSTGRES_IMAGE    = "postgres:latest"
-	POSTGRES_USER     = "testuser"
-	POSTGRES_PASSWORD = "testpassword"
-	POSTGRES_DB       = "postgres"
-)
-
-var postgresCfg = PostgresConfig{
-	Image:    POSTGRES_IMAGE,
-	Username: POSTGRES_USER,
-	Password: POSTGRES_PASSWORD,
-	Database: POSTGRES_DB,
-}
 
 func TestIntegrationRegisterLogin(t *testing.T) {
-	var err error
-	postgresContainer, host, port, err := StartPostgres(postgresCfg)
-	defer func() {
-		if err := testcontainers.TerminateContainer(postgresContainer); err != nil {
-			log.Printf("failed to terminate container: %s", err)
-		}
-	}()
 
-	// Set environment variables for the app
-	//nolint
-	os.Setenv("DB_HOST", host)
-	os.Setenv("DB_PORT", port.Port())
-	os.Setenv("DB_USER", POSTGRES_USER)
-	os.Setenv("DB_PASSWORD", POSTGRES_PASSWORD)
-	os.Setenv("DB_DATABASE", POSTGRES_DB)
-	defer os.Unsetenv("DB_HOST")
-	defer os.Unsetenv("DB_PORT")
-	defer os.Unsetenv("DB_USER")
-	defer os.Unsetenv("DB_PASSWORD")
+	os.Setenv("DB_PERSISTENCE", "memory")
+	os.Setenv("DB_MIGRATIONSPATH", "../migrations")
+	defer os.Unsetenv("DB_PERSISTENCE")
+	defer os.Unsetenv("DB_MIGRATIONSPATH")
 
 	cfgDirPath := filepath.Join("../", "cmd/", "web/")
 	cfg, err := config.NewLoader().LoadConfig(cfgDirPath)

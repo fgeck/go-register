@@ -2,10 +2,10 @@ package web
 
 import (
 	"context"
-	"fmt"
+	"database/sql"
 	"log"
-	"net"
 	"os"
+	"path/filepath"
 	"time"
 
 	"github.com/fgeck/go-register/internal/repository"
@@ -16,12 +16,14 @@ import (
 	"github.com/fgeck/go-register/internal/service/user"
 	"github.com/fgeck/go-register/internal/service/validation"
 	"github.com/fgeck/go-register/internal/web/handlers"
+	"github.com/golang-migrate/migrate/v4"
+	_ "github.com/golang-migrate/migrate/v4/database/sqlite"
+	_ "github.com/golang-migrate/migrate/v4/source/file"
+	"github.com/google/uuid"
+	_ "modernc.org/sqlite"
 
-	"github.com/jackc/pgx/v5"
-	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
-	pgxUUID "github.com/vgarvardt/pgx-google-uuid/v5"
 )
 
 const (
@@ -71,43 +73,46 @@ func InitServer(e *echo.Echo, cfg *config.Config) {
 }
 
 func connectToDatabase(ctx context.Context, cfg *config.Config) *repository.Queries {
-	pgxConfig, err := pgxpool.ParseConfig(
-		fmt.Sprintf(
-			"postgres://%s:%s@%s/%s?sslmode=disable",
-			cfg.Db.User,
-			cfg.Db.Password,
-			net.JoinHostPort(cfg.Db.Host, cfg.Db.Port),
-			cfg.Db.Database,
-		),
-	)
+	DATABASE_PATH := "../../data/"
+	dbFilePath := DATABASE_PATH + "database.db"
+
+	var dbPersistence string
+	switch cfg.Db.Persistence {
+
+	case "FILE":
+		if err := os.MkdirAll(DATABASE_PATH, os.ModePerm); err != nil {
+			log.Fatalf("Failed to create database directory: %v", err)
+		}
+		dbPersistence = dbFilePath
+	default:
+		dbPersistence = "file::memory:?cache=shared"
+	}
+
+	db, err := sql.Open("sqlite", dbPersistence)
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 
-	pgxConfig.AfterConnect = func(ctx context.Context, conn *pgx.Conn) error {
-		pgxUUID.Register(conn.TypeMap())
-
-		return nil
-	}
-
-	pgxConnPool, err := pgxpool.NewWithConfig(ctx, pgxConfig)
+	// Run migrations using golang-migrate
+	migrationPath := "file://" + cfg.Db.MigrationsPath
+	m, err := migrate.New(migrationPath, "sqlite://"+dbPersistence)
 	if err != nil {
-		panic(err)
+		log.Fatalf("Failed to initialize migrations: %v", err)
 	}
 
-	// Verify database connection
-	if err := pgxConnPool.Ping(ctx); err != nil {
-		log.Printf("Database ping failed: %v\n", err)
-		pgxConnPool.Close()
-		os.Exit(1)
+	// Apply migrations
+	if err := m.Up(); err != nil && err != migrate.ErrNoChange {
+		log.Fatalf("Failed to apply migrations: %v", err)
 	}
 
-	queries := repository.New(pgxConnPool)
-
-	return queries
+	log.Println("Database migrations applied successfully.")
+	absPath, _ := filepath.Abs(dbPersistence)
+	log.Printf("Using SQLite database at: %s", absPath)
+	return repository.New(db)
 }
 
 func createAdminUser(ctx context.Context, queries *repository.Queries, cfg *config.Config) {
+	adminId := uuid.NewString()
 	adminName := cfg.App.AdminUser
 	adminPassword := cfg.App.AdminPassword
 	adminEmail := cfg.App.AdminEmail
@@ -123,12 +128,13 @@ func createAdminUser(ctx context.Context, queries *repository.Queries, cfg *conf
 		return
 	}
 
-	if exists {
+	if exists == 1 {
 		log.Println("Admin user already exists, skipping creation.")
 		return
 	}
 
 	userParams := repository.CreateUserParams{
+		ID:           adminId,
 		Username:     adminName,
 		Email:        adminEmail,
 		PasswordHash: hashedPassword,
@@ -146,4 +152,13 @@ func createAdminUser(ctx context.Context, queries *repository.Queries, cfg *conf
 		user.Username,
 		user.Email,
 	)
+}
+
+func getMigrationPath() string {
+	exePath, err := os.Executable()
+	if err != nil {
+		log.Fatalf("Failed to get executable path: %v", err)
+	}
+	exeDir := filepath.Dir(exePath)
+	return filepath.Join(exeDir, "../migrations/")
 }

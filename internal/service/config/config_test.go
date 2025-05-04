@@ -39,10 +39,8 @@ app:
   adminPassword: adminpassword
   adminEmail: wasd
 db:
-  host: localhost
-  port: 5432
-  user: postgres
-  password: password
+  persistence: FILE
+  migrationsPath: "../../migrations"
 `
 
 	t.Run("successfully loads valid config", func(t *testing.T) {
@@ -56,15 +54,15 @@ db:
 		os.Setenv("APP_ADMINUSER", "admin")
 		os.Setenv("APP_ADMINPASSWORD", "adminpassword")
 		os.Setenv("APP_ADMINEMAIL", "adm@test.io")
-		os.Setenv("DB_USER", "testuser")
-		os.Setenv("DB_PASSWORD", "testpassword")
+		os.Setenv("DB_PERSISTENCE", "memory")
+		os.Setenv("DB_MIGRATIONSPATH", "./test/migrations")
 		defer os.Unsetenv("APP_HOST")
 		defer os.Unsetenv("APP_PORT")
 		defer os.Unsetenv("APP_ADMINUSER")
 		defer os.Unsetenv("APP_ADMINPASSWORD")
 		defer os.Unsetenv("APP_ADMINEMAIL")
-		defer os.Unsetenv("DB_USER")
-		defer os.Unsetenv("DB_PASSWORD")
+		defer os.Unsetenv("DB_PERSISTENCE")
+		defer os.Unsetenv("DB_MIGRATIONSPATH")
 
 		// Load the config
 		loader := config.NewLoader()
@@ -78,10 +76,8 @@ db:
 		assert.Equal(t, "admin", config.App.AdminUser)
 		assert.Equal(t, "adminpassword", config.App.AdminPassword)
 		assert.Equal(t, "adm@test.io", config.App.AdminEmail)
-		assert.Equal(t, "localhost", config.Db.Host)
-		assert.Equal(t, "5432", config.Db.Port)
-		assert.Equal(t, "testuser", config.Db.User)
-		assert.Equal(t, "testpassword", config.Db.Password)
+		assert.Equal(t, "memory", config.Db.Persistence)
+		assert.Equal(t, "./test/migrations", config.Db.MigrationsPath)
 	})
 
 	t.Run("fails when config file is missing", func(t *testing.T) {
@@ -99,11 +95,8 @@ app:
   port: 8080
   jwtSecret: change-m3-@$ap!
 db:
-  host: localhost
-  port: 5432
-  user: postgres
-  password: password
-  invalid_field: true
+  persistence: FILE
+  migrationsPath: "../../migrations"
 `
 		configPath, err := createTempConfigFile(invalidConfig)
 		require.NoError(t, err)
@@ -137,9 +130,7 @@ db:
 		assert.Equal(t, "localhost", config.App.Host)
 		assert.Equal(t, "8080", config.App.Port)
 		assert.Equal(t, "change-m3-@$ap!", config.App.JwtSecret)
-		assert.Equal(t, "localhost", config.Db.Host)
-		assert.Equal(t, "5432", config.Db.Port)
-		assert.Equal(t, "postgres", config.Db.User)
-		assert.Equal(t, "password", config.Db.Password)
+		assert.Equal(t, "FILE", config.Db.Persistence)
+		assert.Equal(t, "../../migrations", config.Db.MigrationsPath)
 	})
 }

@@ -7,6 +7,7 @@ import (
 
 	"github.com/fgeck/go-register/internal/repository"
 	"github.com/fgeck/go-register/internal/service/validation"
+	"github.com/google/uuid"
 )
 
 type UserServiceInterface interface {
@@ -39,21 +40,29 @@ var (
 func (s *UserService) GetUserByEmail(ctx context.Context, email string) (*UserDto, error) {
 	user, err := s.queries.GetUserByEmail(ctx, email)
 
-	if errors.Is(err, sql.ErrNoRows) {
-		return nil, ErrUserNotFound
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, ErrUserNotFound
+		}
+		return nil, err
 	}
 
-	return NewUserDto(user), err
+	return NewUserDto(user)
 }
 
 func (s *UserService) UserExistsByEmail(ctx context.Context, email string) (bool, error) {
-	return s.queries.UserExistsByEmail(ctx, email)
+	exists, err := s.queries.UserExistsByEmail(ctx, email)
+	if err != nil {
+		return false, err
+	}
+	return exists == 1, err
 }
 
 func (s *UserService) CreateUser(ctx context.Context, username, email, hashedPassword string) (*UserCreatedDto, error) {
 	user, err := s.queries.CreateUser(
 		ctx,
 		repository.CreateUserParams{
+			ID:           uuid.NewString(),
 			Username:     username,
 			Email:        email,
 			PasswordHash: hashedPassword,

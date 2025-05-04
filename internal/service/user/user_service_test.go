@@ -13,7 +13,7 @@ import (
 	userfacing_errors "github.com/fgeck/go-register/internal/service/errors"
 	"github.com/fgeck/go-register/internal/service/user"
 	validationMocks "github.com/fgeck/go-register/internal/service/validation/mocks"
-	"github.com/jackc/pgx/v5/pgtype"
+	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
@@ -140,7 +140,7 @@ func TestUserExistsByEmail(t *testing.T) {
 
 	t.Run("returns true when user exists", func(t *testing.T) {
 		mockQueries, _, userService := setupUserServiceTest(t)
-		mockQueries.On("UserExistsByEmail", ctx, email).Return(true, nil)
+		mockQueries.On("UserExistsByEmail", ctx, email).Return(int64(1), nil)
 
 		exists, err := userService.UserExistsByEmail(ctx, email)
 
@@ -152,7 +152,7 @@ func TestUserExistsByEmail(t *testing.T) {
 
 	t.Run("returns false when user does not exist", func(t *testing.T) {
 		mockQueries, _, userService := setupUserServiceTest(t)
-		mockQueries.On("UserExistsByEmail", ctx, email).Return(false, nil)
+		mockQueries.On("UserExistsByEmail", ctx, email).Return(int64(0), nil)
 
 		exists, err := userService.UserExistsByEmail(ctx, email)
 
@@ -164,7 +164,7 @@ func TestUserExistsByEmail(t *testing.T) {
 
 	t.Run("returns error when query fails", func(t *testing.T) {
 		mockQueries, _, userService := setupUserServiceTest(t)
-		mockQueries.On("UserExistsByEmail", ctx, email).Return(false, errors.New("database error"))
+		mockQueries.On("UserExistsByEmail", ctx, email).Return(int64(0), errors.New("database error"))
 
 		exists, err := userService.UserExistsByEmail(ctx, email)
 
@@ -183,7 +183,7 @@ func TestGetUserByEmail(t *testing.T) {
 	t.Run("successfully retrieves user", func(t *testing.T) {
 		mockQueries, _, userService := setupUserServiceTest(t)
 		mockQueries.On("GetUserByEmail", ctx, email).Return(repository.User{
-			ID:       pgtype.UUID{Bytes: [16]byte{1, 2, 3, 4}},
+			ID:       uuid.NewString(),
 			Username: "testuser",
 			Email:    email,
 		}, nil)

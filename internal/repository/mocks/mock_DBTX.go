@@ -6,9 +6,8 @@ package repository
 
 import (
 	"context"
+	"database/sql"
 
-	"github.com/jackc/pgx/v5"
-	"github.com/jackc/pgx/v5/pgconn"
 	mock "github.com/stretchr/testify/mock"
 )
 
@@ -39,8 +38,8 @@ func (_m *MockDBTX) EXPECT() *MockDBTX_Expecter {
 	return &MockDBTX_Expecter{mock: &_m.Mock}
 }
 
-// Exec provides a mock function for the type MockDBTX
-func (_mock *MockDBTX) Exec(context1 context.Context, s string, ifaceVals ...interface{}) (pgconn.CommandTag, error) {
+// ExecContext provides a mock function for the type MockDBTX
+func (_mock *MockDBTX) ExecContext(context1 context.Context, s string, ifaceVals ...interface{}) (sql.Result, error) {
 	var tmpRet mock.Arguments
 	if len(ifaceVals) > 0 {
 		tmpRet = _mock.Called(context1, s, ifaceVals)
@@ -50,83 +49,19 @@ func (_mock *MockDBTX) Exec(context1 context.Context, s string, ifaceVals ...int
 	ret := tmpRet
 
 	if len(ret) == 0 {
-		panic("no return value specified for Exec")
+		panic("no return value specified for ExecContext")
 	}
 
-	var r0 pgconn.CommandTag
+	var r0 sql.Result
 	var r1 error
-	if returnFunc, ok := ret.Get(0).(func(context.Context, string, ...interface{}) (pgconn.CommandTag, error)); ok {
+	if returnFunc, ok := ret.Get(0).(func(context.Context, string, ...interface{}) (sql.Result, error)); ok {
 		return returnFunc(context1, s, ifaceVals...)
 	}
-	if returnFunc, ok := ret.Get(0).(func(context.Context, string, ...interface{}) pgconn.CommandTag); ok {
-		r0 = returnFunc(context1, s, ifaceVals...)
-	} else {
-		r0 = ret.Get(0).(pgconn.CommandTag)
-	}
-	if returnFunc, ok := ret.Get(1).(func(context.Context, string, ...interface{}) error); ok {
-		r1 = returnFunc(context1, s, ifaceVals...)
-	} else {
-		r1 = ret.Error(1)
-	}
-	return r0, r1
-}
-
-// MockDBTX_Exec_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'Exec'
-type MockDBTX_Exec_Call struct {
-	*mock.Call
-}
-
-// Exec is a helper method to define mock.On call
-//   - context1
-//   - s
-//   - ifaceVals
-func (_e *MockDBTX_Expecter) Exec(context1 interface{}, s interface{}, ifaceVals ...interface{}) *MockDBTX_Exec_Call {
-	return &MockDBTX_Exec_Call{Call: _e.mock.On("Exec",
-		append([]interface{}{context1, s}, ifaceVals...)...)}
-}
-
-func (_c *MockDBTX_Exec_Call) Run(run func(context1 context.Context, s string, ifaceVals ...interface{})) *MockDBTX_Exec_Call {
-	_c.Call.Run(func(args mock.Arguments) {
-		variadicArgs := args[2].([]interface{})
-		run(args[0].(context.Context), args[1].(string), variadicArgs...)
-	})
-	return _c
-}
-
-func (_c *MockDBTX_Exec_Call) Return(commandTag pgconn.CommandTag, err error) *MockDBTX_Exec_Call {
-	_c.Call.Return(commandTag, err)
-	return _c
-}
-
-func (_c *MockDBTX_Exec_Call) RunAndReturn(run func(context1 context.Context, s string, ifaceVals ...interface{}) (pgconn.CommandTag, error)) *MockDBTX_Exec_Call {
-	_c.Call.Return(run)
-	return _c
-}
-
-// Query provides a mock function for the type MockDBTX
-func (_mock *MockDBTX) Query(context1 context.Context, s string, ifaceVals ...interface{}) (pgx.Rows, error) {
-	var tmpRet mock.Arguments
-	if len(ifaceVals) > 0 {
-		tmpRet = _mock.Called(context1, s, ifaceVals)
-	} else {
-		tmpRet = _mock.Called(context1, s)
-	}
-	ret := tmpRet
-
-	if len(ret) == 0 {
-		panic("no return value specified for Query")
-	}
-
-	var r0 pgx.Rows
-	var r1 error
-	if returnFunc, ok := ret.Get(0).(func(context.Context, string, ...interface{}) (pgx.Rows, error)); ok {
-		return returnFunc(context1, s, ifaceVals...)
-	}
-	if returnFunc, ok := ret.Get(0).(func(context.Context, string, ...interface{}) pgx.Rows); ok {
+	if returnFunc, ok := ret.Get(0).(func(context.Context, string, ...interface{}) sql.Result); ok {
 		r0 = returnFunc(context1, s, ifaceVals...)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(pgx.Rows)
+			r0 = ret.Get(0).(sql.Result)
 		}
 	}
 	if returnFunc, ok := ret.Get(1).(func(context.Context, string, ...interface{}) error); ok {
@@ -137,21 +72,21 @@ func (_mock *MockDBTX) Query(context1 context.Context, s string, ifaceVals ...in
 	return r0, r1
 }
 
-// MockDBTX_Query_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'Query'
-type MockDBTX_Query_Call struct {
+// MockDBTX_ExecContext_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'ExecContext'
+type MockDBTX_ExecContext_Call struct {
 	*mock.Call
 }
 
-// Query is a helper method to define mock.On call
+// ExecContext is a helper method to define mock.On call
 //   - context1
 //   - s
 //   - ifaceVals
-func (_e *MockDBTX_Expecter) Query(context1 interface{}, s interface{}, ifaceVals ...interface{}) *MockDBTX_Query_Call {
-	return &MockDBTX_Query_Call{Call: _e.mock.On("Query",
+func (_e *MockDBTX_Expecter) ExecContext(context1 interface{}, s interface{}, ifaceVals ...interface{}) *MockDBTX_ExecContext_Call {
+	return &MockDBTX_ExecContext_Call{Call: _e.mock.On("ExecContext",
 		append([]interface{}{context1, s}, ifaceVals...)...)}
 }
 
-func (_c *MockDBTX_Query_Call) Run(run func(context1 context.Context, s string, ifaceVals ...interface{})) *MockDBTX_Query_Call {
+func (_c *MockDBTX_ExecContext_Call) Run(run func(context1 context.Context, s string, ifaceVals ...interface{})) *MockDBTX_ExecContext_Call {
 	_c.Call.Run(func(args mock.Arguments) {
 		variadicArgs := args[2].([]interface{})
 		run(args[0].(context.Context), args[1].(string), variadicArgs...)
@@ -159,18 +94,75 @@ func (_c *MockDBTX_Query_Call) Run(run func(context1 context.Context, s string, 
 	return _c
 }
 
-func (_c *MockDBTX_Query_Call) Return(rows pgx.Rows, err error) *MockDBTX_Query_Call {
-	_c.Call.Return(rows, err)
+func (_c *MockDBTX_ExecContext_Call) Return(result sql.Result, err error) *MockDBTX_ExecContext_Call {
+	_c.Call.Return(result, err)
 	return _c
 }
 
-func (_c *MockDBTX_Query_Call) RunAndReturn(run func(context1 context.Context, s string, ifaceVals ...interface{}) (pgx.Rows, error)) *MockDBTX_Query_Call {
+func (_c *MockDBTX_ExecContext_Call) RunAndReturn(run func(context1 context.Context, s string, ifaceVals ...interface{}) (sql.Result, error)) *MockDBTX_ExecContext_Call {
 	_c.Call.Return(run)
 	return _c
 }
 
-// QueryRow provides a mock function for the type MockDBTX
-func (_mock *MockDBTX) QueryRow(context1 context.Context, s string, ifaceVals ...interface{}) pgx.Row {
+// PrepareContext provides a mock function for the type MockDBTX
+func (_mock *MockDBTX) PrepareContext(context1 context.Context, s string) (*sql.Stmt, error) {
+	ret := _mock.Called(context1, s)
+
+	if len(ret) == 0 {
+		panic("no return value specified for PrepareContext")
+	}
+
+	var r0 *sql.Stmt
+	var r1 error
+	if returnFunc, ok := ret.Get(0).(func(context.Context, string) (*sql.Stmt, error)); ok {
+		return returnFunc(context1, s)
+	}
+	if returnFunc, ok := ret.Get(0).(func(context.Context, string) *sql.Stmt); ok {
+		r0 = returnFunc(context1, s)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*sql.Stmt)
+		}
+	}
+	if returnFunc, ok := ret.Get(1).(func(context.Context, string) error); ok {
+		r1 = returnFunc(context1, s)
+	} else {
+		r1 = ret.Error(1)
+	}
+	return r0, r1
+}
+
+// MockDBTX_PrepareContext_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'PrepareContext'
+type MockDBTX_PrepareContext_Call struct {
+	*mock.Call
+}
+
+// PrepareContext is a helper method to define mock.On call
+//   - context1
+//   - s
+func (_e *MockDBTX_Expecter) PrepareContext(context1 interface{}, s interface{}) *MockDBTX_PrepareContext_Call {
+	return &MockDBTX_PrepareContext_Call{Call: _e.mock.On("PrepareContext", context1, s)}
+}
+
+func (_c *MockDBTX_PrepareContext_Call) Run(run func(context1 context.Context, s string)) *MockDBTX_PrepareContext_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(context.Context), args[1].(string))
+	})
+	return _c
+}
+
+func (_c *MockDBTX_PrepareContext_Call) Return(stmt *sql.Stmt, err error) *MockDBTX_PrepareContext_Call {
+	_c.Call.Return(stmt, err)
+	return _c
+}
+
+func (_c *MockDBTX_PrepareContext_Call) RunAndReturn(run func(context1 context.Context, s string) (*sql.Stmt, error)) *MockDBTX_PrepareContext_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// QueryContext provides a mock function for the type MockDBTX
+func (_mock *MockDBTX) QueryContext(context1 context.Context, s string, ifaceVals ...interface{}) (*sql.Rows, error) {
 	var tmpRet mock.Arguments
 	if len(ifaceVals) > 0 {
 		tmpRet = _mock.Called(context1, s, ifaceVals)
@@ -180,35 +172,101 @@ func (_mock *MockDBTX) QueryRow(context1 context.Context, s string, ifaceVals ..
 	ret := tmpRet
 
 	if len(ret) == 0 {
-		panic("no return value specified for QueryRow")
+		panic("no return value specified for QueryContext")
 	}
 
-	var r0 pgx.Row
-	if returnFunc, ok := ret.Get(0).(func(context.Context, string, ...interface{}) pgx.Row); ok {
+	var r0 *sql.Rows
+	var r1 error
+	if returnFunc, ok := ret.Get(0).(func(context.Context, string, ...interface{}) (*sql.Rows, error)); ok {
+		return returnFunc(context1, s, ifaceVals...)
+	}
+	if returnFunc, ok := ret.Get(0).(func(context.Context, string, ...interface{}) *sql.Rows); ok {
 		r0 = returnFunc(context1, s, ifaceVals...)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(pgx.Row)
+			r0 = ret.Get(0).(*sql.Rows)
+		}
+	}
+	if returnFunc, ok := ret.Get(1).(func(context.Context, string, ...interface{}) error); ok {
+		r1 = returnFunc(context1, s, ifaceVals...)
+	} else {
+		r1 = ret.Error(1)
+	}
+	return r0, r1
+}
+
+// MockDBTX_QueryContext_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'QueryContext'
+type MockDBTX_QueryContext_Call struct {
+	*mock.Call
+}
+
+// QueryContext is a helper method to define mock.On call
+//   - context1
+//   - s
+//   - ifaceVals
+func (_e *MockDBTX_Expecter) QueryContext(context1 interface{}, s interface{}, ifaceVals ...interface{}) *MockDBTX_QueryContext_Call {
+	return &MockDBTX_QueryContext_Call{Call: _e.mock.On("QueryContext",
+		append([]interface{}{context1, s}, ifaceVals...)...)}
+}
+
+func (_c *MockDBTX_QueryContext_Call) Run(run func(context1 context.Context, s string, ifaceVals ...interface{})) *MockDBTX_QueryContext_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		variadicArgs := args[2].([]interface{})
+		run(args[0].(context.Context), args[1].(string), variadicArgs...)
+	})
+	return _c
+}
+
+func (_c *MockDBTX_QueryContext_Call) Return(rows *sql.Rows, err error) *MockDBTX_QueryContext_Call {
+	_c.Call.Return(rows, err)
+	return _c
+}
+
+func (_c *MockDBTX_QueryContext_Call) RunAndReturn(run func(context1 context.Context, s string, ifaceVals ...interface{}) (*sql.Rows, error)) *MockDBTX_QueryContext_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// QueryRowContext provides a mock function for the type MockDBTX
+func (_mock *MockDBTX) QueryRowContext(context1 context.Context, s string, ifaceVals ...interface{}) *sql.Row {
+	var tmpRet mock.Arguments
+	if len(ifaceVals) > 0 {
+		tmpRet = _mock.Called(context1, s, ifaceVals)
+	} else {
+		tmpRet = _mock.Called(context1, s)
+	}
+	ret := tmpRet
+
+	if len(ret) == 0 {
+		panic("no return value specified for QueryRowContext")
+	}
+
+	var r0 *sql.Row
+	if returnFunc, ok := ret.Get(0).(func(context.Context, string, ...interface{}) *sql.Row); ok {
+		r0 = returnFunc(context1, s, ifaceVals...)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*sql.Row)
 		}
 	}
 	return r0
 }
 
-// MockDBTX_QueryRow_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'QueryRow'
-type MockDBTX_QueryRow_Call struct {
+// MockDBTX_QueryRowContext_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'QueryRowContext'
+type MockDBTX_QueryRowContext_Call struct {
 	*mock.Call
 }
 
-// QueryRow is a helper method to define mock.On call
+// QueryRowContext is a helper method to define mock.On call
 //   - context1
 //   - s
 //   - ifaceVals
-func (_e *MockDBTX_Expecter) QueryRow(context1 interface{}, s interface{}, ifaceVals ...interface{}) *MockDBTX_QueryRow_Call {
-	return &MockDBTX_QueryRow_Call{Call: _e.mock.On("QueryRow",
+func (_e *MockDBTX_Expecter) QueryRowContext(context1 interface{}, s interface{}, ifaceVals ...interface{}) *MockDBTX_QueryRowContext_Call {
+	return &MockDBTX_QueryRowContext_Call{Call: _e.mock.On("QueryRowContext",
 		append([]interface{}{context1, s}, ifaceVals...)...)}
 }
 
-func (_c *MockDBTX_QueryRow_Call) Run(run func(context1 context.Context, s string, ifaceVals ...interface{})) *MockDBTX_QueryRow_Call {
+func (_c *MockDBTX_QueryRowContext_Call) Run(run func(context1 context.Context, s string, ifaceVals ...interface{})) *MockDBTX_QueryRowContext_Call {
 	_c.Call.Run(func(args mock.Arguments) {
 		variadicArgs := args[2].([]interface{})
 		run(args[0].(context.Context), args[1].(string), variadicArgs...)
@@ -216,12 +274,12 @@ func (_c *MockDBTX_QueryRow_Call) Run(run func(context1 context.Context, s strin
 	return _c
 }
 
-func (_c *MockDBTX_QueryRow_Call) Return(row pgx.Row) *MockDBTX_QueryRow_Call {
+func (_c *MockDBTX_QueryRowContext_Call) Return(row *sql.Row) *MockDBTX_QueryRowContext_Call {
 	_c.Call.Return(row)
 	return _c
 }
 
-func (_c *MockDBTX_QueryRow_Call) RunAndReturn(run func(context1 context.Context, s string, ifaceVals ...interface{}) pgx.Row) *MockDBTX_QueryRow_Call {
+func (_c *MockDBTX_QueryRowContext_Call) RunAndReturn(run func(context1 context.Context, s string, ifaceVals ...interface{}) *sql.Row) *MockDBTX_QueryRowContext_Call {
 	_c.Call.Return(run)
 	return _c
 }

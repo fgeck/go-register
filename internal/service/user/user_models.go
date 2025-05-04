@@ -18,14 +18,19 @@ type UserDto struct {
 	Role         UserRole  `json:"role"`
 }
 
-func NewUserDto(user repository.User) *UserDto {
+func NewUserDto(user repository.User) (*UserDto, error) {
+	id, err := uuid.Parse(user.ID)
+	if err != nil {
+		return nil, err
+	}
+
 	return &UserDto{
-		ID:           uuid.UUID(user.ID.Bytes),
+		ID:           id,
 		Username:     user.Username,
 		Email:        user.Email,
 		PasswordHash: user.PasswordHash,
 		Role:         UserRoleFromString(user.UserRole),
-	}
+	}, nil
 }
 
 var (

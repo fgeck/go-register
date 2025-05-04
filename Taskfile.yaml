@@ -19,7 +19,7 @@ tasks:
   install-dev-tools:
     desc: Install development tools
     cmds:
-      - brew install sqlc tailwindcss mockery golangci-lint
+      - brew install sqlc tailwindcss mockery golangci-lint golang-migrate
       - go install github.com/a-h/templ/cmd/templ@latest
       - go install github.com/air-verse/air@latest
     preconditions:

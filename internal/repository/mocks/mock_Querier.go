@@ -8,7 +8,6 @@ import (
 	"context"
 
 	"github.com/fgeck/go-register/internal/repository"
-	"github.com/jackc/pgx/v5/pgtype"
 	mock "github.com/stretchr/testify/mock"
 )
 
@@ -95,7 +94,7 @@ func (_c *MockQuerier_CreateUser_Call) RunAndReturn(run func(ctx context.Context
 }
 
 // DeleteUser provides a mock function for the type MockQuerier
-func (_mock *MockQuerier) DeleteUser(ctx context.Context, id pgtype.UUID) error {
+func (_mock *MockQuerier) DeleteUser(ctx context.Context, id string) error {
 	ret := _mock.Called(ctx, id)
 
 	if len(ret) == 0 {
@@ -103,7 +102,7 @@ func (_mock *MockQuerier) DeleteUser(ctx context.Context, id pgtype.UUID) error 
 	}
 
 	var r0 error
-	if returnFunc, ok := ret.Get(0).(func(context.Context, pgtype.UUID) error); ok {
+	if returnFunc, ok := ret.Get(0).(func(context.Context, string) error); ok {
 		r0 = returnFunc(ctx, id)
 	} else {
 		r0 = ret.Error(0)
@@ -123,9 +122,9 @@ func (_e *MockQuerier_Expecter) DeleteUser(ctx interface{}, id interface{}) *Moc
 	return &MockQuerier_DeleteUser_Call{Call: _e.mock.On("DeleteUser", ctx, id)}
 }
 
-func (_c *MockQuerier_DeleteUser_Call) Run(run func(ctx context.Context, id pgtype.UUID)) *MockQuerier_DeleteUser_Call {
+func (_c *MockQuerier_DeleteUser_Call) Run(run func(ctx context.Context, id string)) *MockQuerier_DeleteUser_Call {
 	_c.Call.Run(func(args mock.Arguments) {
-		run(args[0].(context.Context), args[1].(pgtype.UUID))
+		run(args[0].(context.Context), args[1].(string))
 	})
 	return _c
 }
@@ -135,7 +134,7 @@ func (_c *MockQuerier_DeleteUser_Call) Return(err error) *MockQuerier_DeleteUser
 	return _c
 }
 
-func (_c *MockQuerier_DeleteUser_Call) RunAndReturn(run func(ctx context.Context, id pgtype.UUID) error) *MockQuerier_DeleteUser_Call {
+func (_c *MockQuerier_DeleteUser_Call) RunAndReturn(run func(ctx context.Context, id string) error) *MockQuerier_DeleteUser_Call {
 	_c.Call.Return(run)
 	return _c
 }
@@ -241,7 +240,7 @@ func (_c *MockQuerier_GetUserByEmail_Call) RunAndReturn(run func(ctx context.Con
 }
 
 // GetUserById provides a mock function for the type MockQuerier
-func (_mock *MockQuerier) GetUserById(ctx context.Context, id pgtype.UUID) (repository.User, error) {
+func (_mock *MockQuerier) GetUserById(ctx context.Context, id string) (repository.User, error) {
 	ret := _mock.Called(ctx, id)
 
 	if len(ret) == 0 {
@@ -250,15 +249,15 @@ func (_mock *MockQuerier) GetUserById(ctx context.Context, id pgtype.UUID) (repo
 
 	var r0 repository.User
 	var r1 error
-	if returnFunc, ok := ret.Get(0).(func(context.Context, pgtype.UUID) (repository.User, error)); ok {
+	if returnFunc, ok := ret.Get(0).(func(context.Context, string) (repository.User, error)); ok {
 		return returnFunc(ctx, id)
 	}
-	if returnFunc, ok := ret.Get(0).(func(context.Context, pgtype.UUID) repository.User); ok {
+	if returnFunc, ok := ret.Get(0).(func(context.Context, string) repository.User); ok {
 		r0 = returnFunc(ctx, id)
 	} else {
 		r0 = ret.Get(0).(repository.User)
 	}
-	if returnFunc, ok := ret.Get(1).(func(context.Context, pgtype.UUID) error); ok {
+	if returnFunc, ok := ret.Get(1).(func(context.Context, string) error); ok {
 		r1 = returnFunc(ctx, id)
 	} else {
 		r1 = ret.Error(1)
@@ -278,9 +277,9 @@ func (_e *MockQuerier_Expecter) GetUserById(ctx interface{}, id interface{}) *Mo
 	return &MockQuerier_GetUserById_Call{Call: _e.mock.On("GetUserById", ctx, id)}
 }
 
-func (_c *MockQuerier_GetUserById_Call) Run(run func(ctx context.Context, id pgtype.UUID)) *MockQuerier_GetUserById_Call {
+func (_c *MockQuerier_GetUserById_Call) Run(run func(ctx context.Context, id string)) *MockQuerier_GetUserById_Call {
 	_c.Call.Run(func(args mock.Arguments) {
-		run(args[0].(context.Context), args[1].(pgtype.UUID))
+		run(args[0].(context.Context), args[1].(string))
 	})
 	return _c
 }
@@ -290,7 +289,7 @@ func (_c *MockQuerier_GetUserById_Call) Return(user repository.User, err error) 
 	return _c
 }
 
-func (_c *MockQuerier_GetUserById_Call) RunAndReturn(run func(ctx context.Context, id pgtype.UUID) (repository.User, error)) *MockQuerier_GetUserById_Call {
+func (_c *MockQuerier_GetUserById_Call) RunAndReturn(run func(ctx context.Context, id string) (repository.User, error)) *MockQuerier_GetUserById_Call {
 	_c.Call.Return(run)
 	return _c
 }
@@ -351,22 +350,22 @@ func (_c *MockQuerier_UpdateUser_Call) RunAndReturn(run func(ctx context.Context
 }
 
 // UserExistsByEmail provides a mock function for the type MockQuerier
-func (_mock *MockQuerier) UserExistsByEmail(ctx context.Context, email string) (bool, error) {
+func (_mock *MockQuerier) UserExistsByEmail(ctx context.Context, email string) (int64, error) {
 	ret := _mock.Called(ctx, email)
 
 	if len(ret) == 0 {
 		panic("no return value specified for UserExistsByEmail")
 	}
 
-	var r0 bool
+	var r0 int64
 	var r1 error
-	if returnFunc, ok := ret.Get(0).(func(context.Context, string) (bool, error)); ok {
+	if returnFunc, ok := ret.Get(0).(func(context.Context, string) (int64, error)); ok {
 		return returnFunc(ctx, email)
 	}
-	if returnFunc, ok := ret.Get(0).(func(context.Context, string) bool); ok {
+	if returnFunc, ok := ret.Get(0).(func(context.Context, string) int64); ok {
 		r0 = returnFunc(ctx, email)
 	} else {
-		r0 = ret.Get(0).(bool)
+		r0 = ret.Get(0).(int64)
 	}
 	if returnFunc, ok := ret.Get(1).(func(context.Context, string) error); ok {
 		r1 = returnFunc(ctx, email)
@@ -395,12 +394,12 @@ func (_c *MockQuerier_UserExistsByEmail_Call) Run(run func(ctx context.Context, 
 	return _c
 }
 
-func (_c *MockQuerier_UserExistsByEmail_Call) Return(b bool, err error) *MockQuerier_UserExistsByEmail_Call {
-	_c.Call.Return(b, err)
+func (_c *MockQuerier_UserExistsByEmail_Call) Return(n int64, err error) *MockQuerier_UserExistsByEmail_Call {
+	_c.Call.Return(n, err)
 	return _c
 }
 
-func (_c *MockQuerier_UserExistsByEmail_Call) RunAndReturn(run func(ctx context.Context, email string) (bool, error)) *MockQuerier_UserExistsByEmail_Call {
+func (_c *MockQuerier_UserExistsByEmail_Call) RunAndReturn(run func(ctx context.Context, email string) (int64, error)) *MockQuerier_UserExistsByEmail_Call {
 	_c.Call.Return(run)
 	return _c
 }
