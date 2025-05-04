@@ -3,6 +3,7 @@ package web
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"log"
 	"os"
 	"path/filepath"
@@ -30,13 +31,15 @@ const (
 	TWENTY_FOUR_HOURS_IN_SECONDS = 24 * 60 * 60
 	ISSUER                       = "go-register"
 	CONTEXT_TIMEOUT              = 10 * time.Second
+	DIR_PERMISSION               = 0755 // Read, write, execute for owner; read, execute for group and others
+
 )
 
 func InitServer(e *echo.Echo, cfg *config.Config) {
 	// Initialize DB
 	ctx, cancel := context.WithTimeout(context.Background(), CONTEXT_TIMEOUT)
 	defer cancel()
-	queries := connectToDatabase(ctx, cfg)
+	queries := connectToDatabase(cfg)
 	createAdminUser(ctx, queries, cfg)
 
 	// Services
@@ -72,15 +75,14 @@ func InitServer(e *echo.Echo, cfg *config.Config) {
 	// adminGroup.Use(authMiddleware, adminMiddleware)
 }
 
-func connectToDatabase(ctx context.Context, cfg *config.Config) *repository.Queries {
+func connectToDatabase(cfg *config.Config) *repository.Queries {
 	DATABASE_PATH := "../../data/"
 	dbFilePath := DATABASE_PATH + "database.db"
 
 	var dbPersistence string
 	switch cfg.Db.Persistence {
-
 	case "FILE":
-		if err := os.MkdirAll(DATABASE_PATH, os.ModePerm); err != nil {
+		if err := os.MkdirAll(DATABASE_PATH, DIR_PERMISSION); err != nil {
 			log.Fatalf("Failed to create database directory: %v", err)
 		}
 		dbPersistence = dbFilePath
@@ -101,7 +103,7 @@ func connectToDatabase(ctx context.Context, cfg *config.Config) *repository.Quer
 	}
 
 	// Apply migrations
-	if err := m.Up(); err != nil && err != migrate.ErrNoChange {
+	if err := m.Up(); err != nil && !errors.Is(err, migrate.ErrNoChange) {
 		log.Fatalf("Failed to apply migrations: %v", err)
 	}
 
@@ -152,13 +154,4 @@ func createAdminUser(ctx context.Context, queries *repository.Queries, cfg *conf
 		user.Username,
 		user.Email,
 	)
-}
-
-func getMigrationPath() string {
-	exePath, err := os.Executable()
-	if err != nil {
-		log.Fatalf("Failed to get executable path: %v", err)
-	}
-	exeDir := filepath.Dir(exePath)
-	return filepath.Join(exeDir, "../migrations/")
 }
