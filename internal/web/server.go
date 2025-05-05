@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net"
+	"net/http"
 	"os"
 	"time"
 
@@ -17,8 +18,10 @@ import (
 	"github.com/fgeck/go-register/internal/service/validation"
 	"github.com/fgeck/go-register/internal/web/handlers"
 
+	gojwt "github.com/golang-jwt/jwt/v5"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
+	echojwt "github.com/labstack/echo-jwt/v4"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	pgxUUID "github.com/vgarvardt/pgx-google-uuid/v5"
@@ -29,6 +32,15 @@ const (
 	ISSUER                       = "go-register"
 	CONTEXT_TIMEOUT              = 10 * time.Second
 )
+
+// testing only!
+func restricted(c echo.Context) error {
+	user := c.Get("user").(*gojwt.Token)
+	claims := user.Claims.(*jwt.JwtCustomClaims)
+	name := claims.UserId
+	role := claims.UserRole
+	return c.String(http.StatusOK, "Welcome "+name+" with role: "+role+"!")
+}
 
 func InitServer(e *echo.Echo, cfg *config.Config) {
 	// Initialize DB
@@ -50,6 +62,17 @@ func InitServer(e *echo.Echo, cfg *config.Config) {
 
 	// Middlewares
 	e.Use(middleware.Logger())
+	e.Use(middleware.Recover())
+	e.Use(echojwt.WithConfig(echojwt.Config{
+		SigningKey:  []byte(cfg.App.JwtSecret),
+		TokenLookup: "cookie:token",
+		NewClaimsFunc: func(c echo.Context) gojwt.Claims {
+			return new(jwt.JwtCustomClaims)
+		},
+	}))
+
+	res := e.Group("/restricted")
+	res.GET("", restricted)
 
 	// Public Routes
 	e.Static("/", "public")
