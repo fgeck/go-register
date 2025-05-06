@@ -4,10 +4,10 @@ import (
 	"context"
 	"fmt"
 
-	customErrors "github.com/fgeck/go-register/internal/service/errors"
-	"github.com/fgeck/go-register/internal/service/security/jwt"
-	"github.com/fgeck/go-register/internal/service/security/password"
-	"github.com/fgeck/go-register/internal/service/user"
+	customErrors "github.com/fgeck/gotth-postgres/internal/service/errors"
+	"github.com/fgeck/gotth-postgres/internal/service/security/jwt"
+	"github.com/fgeck/gotth-postgres/internal/service/security/password"
+	"github.com/fgeck/gotth-postgres/internal/service/user"
 )
 
 type LoginRegisterServiceInterface interface {

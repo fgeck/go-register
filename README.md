@@ -1,4 +1,4 @@
-# go-register
+# gotth-postgres
 
 Template repo for user registration and signin based on GoTTH (Go, Tailwind, Templ, Htmx) stack
 

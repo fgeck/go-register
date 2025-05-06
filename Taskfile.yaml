@@ -59,7 +59,7 @@ tasks:
   build:
     desc: Build the project
     cmds:
-      - go build -o bin/go-register ./cmd/web/main.go
+      - go build -o bin/gotth-postgres ./cmd/web/main.go
     preconditions:
       - which go
 
@@ -96,7 +96,7 @@ tasks:
     desc: Reset the database using podman
     cmds:
       - podman rm -f postgres
-      - podman volume rm go-register_db_data
+      - podman volume rm gotth-postgres_db_data
       - task: start-database
     preconditions:
       - which podman

@@ -9,15 +9,15 @@ import (
 	"os"
 	"time"
 
-	"github.com/fgeck/go-register/internal/repository"
-	"github.com/fgeck/go-register/internal/service/config"
-	"github.com/fgeck/go-register/internal/service/loginRegister"
-	"github.com/fgeck/go-register/internal/service/security/jwt"
-	"github.com/fgeck/go-register/internal/service/security/password"
-	"github.com/fgeck/go-register/internal/service/user"
-	"github.com/fgeck/go-register/internal/service/validation"
-	"github.com/fgeck/go-register/internal/web/handlers"
-	mw "github.com/fgeck/go-register/internal/web/middleware"
+	"github.com/fgeck/gotth-postgres/internal/repository"
+	"github.com/fgeck/gotth-postgres/internal/service/config"
+	"github.com/fgeck/gotth-postgres/internal/service/loginRegister"
+	"github.com/fgeck/gotth-postgres/internal/service/security/jwt"
+	"github.com/fgeck/gotth-postgres/internal/service/security/password"
+	"github.com/fgeck/gotth-postgres/internal/service/user"
+	"github.com/fgeck/gotth-postgres/internal/service/validation"
+	"github.com/fgeck/gotth-postgres/internal/web/handlers"
+	mw "github.com/fgeck/gotth-postgres/internal/web/middleware"
 
 	gojwt "github.com/golang-jwt/jwt/v5"
 	"github.com/jackc/pgx/v5"
@@ -29,7 +29,7 @@ import (
 
 const (
 	TWENTY_FOUR_HOURS_IN_SECONDS = 24 * 60 * 60
-	ISSUER                       = "go-register"
+	ISSUER                       = "gotth-postgres"
 	CONTEXT_TIMEOUT              = 10 * time.Second
 )
 

@@ -13,9 +13,9 @@ import (
 
 	"time"
 
-	"github.com/fgeck/go-register/internal/service/config"
-	"github.com/fgeck/go-register/internal/service/user"
-	"github.com/fgeck/go-register/internal/web"
+	"github.com/fgeck/gotth-postgres/internal/service/config"
+	"github.com/fgeck/gotth-postgres/internal/service/user"
+	"github.com/fgeck/gotth-postgres/internal/web"
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"

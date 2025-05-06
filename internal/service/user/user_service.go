@@ -5,8 +5,8 @@ import (
 	"database/sql"
 	"errors"
 
-	"github.com/fgeck/go-register/internal/repository"
-	"github.com/fgeck/go-register/internal/service/validation"
+	"github.com/fgeck/gotth-postgres/internal/repository"
+	"github.com/fgeck/gotth-postgres/internal/service/validation"
 )
 
 type UserServiceInterface interface {

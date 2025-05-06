@@ -1,3 +1,5 @@
+//go:build unittest
+
 package middleware_test
 
 import (
@@ -6,9 +8,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/fgeck/go-register/internal/service/security/jwt"
-	"github.com/fgeck/go-register/internal/service/user"
-	mw "github.com/fgeck/go-register/internal/web/middleware"
+	"github.com/fgeck/gotth-postgres/internal/service/security/jwt"
+	"github.com/fgeck/gotth-postgres/internal/service/user"
+	mw "github.com/fgeck/gotth-postgres/internal/web/middleware"
 	gojwt "github.com/golang-jwt/jwt/v5"
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/assert"
