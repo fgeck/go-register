@@ -17,11 +17,11 @@ import (
 	"github.com/fgeck/go-register/internal/service/user"
 	"github.com/fgeck/go-register/internal/service/validation"
 	"github.com/fgeck/go-register/internal/web/handlers"
+	mw "github.com/fgeck/go-register/internal/web/middleware"
 
 	gojwt "github.com/golang-jwt/jwt/v5"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
-	echojwt "github.com/labstack/echo-jwt/v4"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	pgxUUID "github.com/vgarvardt/pgx-google-uuid/v5"
@@ -32,15 +32,6 @@ const (
 	ISSUER                       = "go-register"
 	CONTEXT_TIMEOUT              = 10 * time.Second
 )
-
-// testing only!
-func restricted(c echo.Context) error {
-	user := c.Get("user").(*gojwt.Token)
-	claims := user.Claims.(*jwt.JwtCustomClaims)
-	name := claims.UserId
-	role := claims.UserRole
-	return c.String(http.StatusOK, "Welcome "+name+" with role: "+role+"!")
-}
 
 func InitServer(e *echo.Echo, cfg *config.Config) {
 	// Initialize DB
@@ -63,16 +54,6 @@ func InitServer(e *echo.Echo, cfg *config.Config) {
 	// Middlewares
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
-	e.Use(echojwt.WithConfig(echojwt.Config{
-		SigningKey:  []byte(cfg.App.JwtSecret),
-		TokenLookup: "cookie:token",
-		NewClaimsFunc: func(c echo.Context) gojwt.Claims {
-			return new(jwt.JwtCustomClaims)
-		},
-	}))
-
-	res := e.Group("/restricted")
-	res.GET("", restricted)
 
 	// Public Routes
 	e.Static("/", "public")
@@ -83,14 +64,31 @@ func InitServer(e *echo.Echo, cfg *config.Config) {
 	e.GET("/registerForm", registerHandler.RegisterFormHandler)
 	e.POST("/api/register", registerHandler.RegisterUserHandler)
 
-	// Protected Routes (requires authentication)
-	// protectedGroup := e.Group("/api/protected")
-	// protectedGroup.Use(authMiddleware)
-	// protectedGroup.GET("/profile", ProfileHandler)
+	// JWT Middleware only
+	res := e.Group("/restricted")
+	res.Use(mw.JwtAuthMiddleware(cfg.App.JwtSecret))
+	// for testing purposes
+	res.GET("", func(c echo.Context) error {
+		user := c.Get("user").(*gojwt.Token)
+		claims := user.Claims.(*jwt.JwtCustomClaims)
+		name := claims.UserId
+		role := claims.UserRole
+
+		return c.String(http.StatusOK, "Welcome "+name+" with role: "+role+"!")
+	})
 
 	// Admin Routes (requires "UserRole" == "admin")
-	// adminGroup := e.Group("/api/admin")
-	// adminGroup.Use(authMiddleware, adminMiddleware)
+	adminGroup := e.Group("/api/admin")
+	adminGroup.Use(mw.JwtAuthMiddleware(cfg.App.JwtSecret), mw.RequireAdminMiddleware())
+	// for testing purposes
+	adminGroup.GET("/users", func(c echo.Context) error {
+		user := c.Get("user").(*gojwt.Token)
+		claims := user.Claims.(*jwt.JwtCustomClaims)
+		name := claims.UserId
+		role := claims.UserRole
+
+		return c.String(http.StatusOK, "Welcome "+name+" with role: "+role+"!e")
+	})
 }
 
 func connectToDatabase(ctx context.Context, cfg *config.Config) *repository.Queries {
