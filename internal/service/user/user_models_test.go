@@ -19,6 +19,16 @@ func TestUSerRoleFromString(t *testing.T) {
 		role := user.UserRoleFromString("ADMIN")
 		assert.Equal(t, user.UserRoleAdmin, role)
 	})
+	t.Run("returns UserRoleUser for user", func(t *testing.T) {
+		t.Parallel()
+		role := user.UserRoleFromString("user")
+		assert.Equal(t, user.UserRoleUser, role)
+	})
+	t.Run("returns UserRoleAdmin for admin", func(t *testing.T) {
+		t.Parallel()
+		role := user.UserRoleFromString("admin")
+		assert.Equal(t, user.UserRoleAdmin, role)
+	})
 	t.Run("returns UserRoleUser for unknown role", func(t *testing.T) {
 		t.Parallel()
 		role := user.UserRoleFromString("UNKNOWN")

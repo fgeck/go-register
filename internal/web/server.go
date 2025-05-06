@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net"
+	"net/http"
 	"os"
 	"time"
 
@@ -16,7 +17,9 @@ import (
 	"github.com/fgeck/go-register/internal/service/user"
 	"github.com/fgeck/go-register/internal/service/validation"
 	"github.com/fgeck/go-register/internal/web/handlers"
+	mw "github.com/fgeck/go-register/internal/web/middleware"
 
+	gojwt "github.com/golang-jwt/jwt/v5"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/labstack/echo/v4"
@@ -49,7 +52,10 @@ func InitServer(e *echo.Echo, cfg *config.Config) {
 	loginHandler := handlers.NewLoginHandler(loginRegisterService)
 
 	// Middlewares
+	authenticationMiddleware := mw.NewAuthenticationMiddleware(cfg.App.JwtSecret)
+	authorizationMiddleware := mw.NewAuthorizationMiddleware()
 	e.Use(middleware.Logger())
+	e.Use(middleware.Recover())
 
 	// Public Routes
 	e.Static("/", "public")
@@ -60,14 +66,43 @@ func InitServer(e *echo.Echo, cfg *config.Config) {
 	e.GET("/registerForm", registerHandler.RegisterFormHandler)
 	e.POST("/api/register", registerHandler.RegisterUserHandler)
 
-	// Protected Routes (requires authentication)
-	// protectedGroup := e.Group("/api/protected")
-	// protectedGroup.Use(authMiddleware)
-	// protectedGroup.GET("/profile", ProfileHandler)
+	// JWT Middleware only
+	res := e.Group("/restricted")
+	res.Use(authenticationMiddleware.JwtAuthMiddleware())
+	// for testing purposes
+	res.GET("", func(c echo.Context) error {
+		token, ok := c.Get("user").(*gojwt.Token)
+		if !ok {
+			return echo.ErrForbidden
+		}
+		claims, ok := token.Claims.(*jwt.JwtCustomClaims)
+		if !ok {
+			return echo.ErrForbidden
+		}
+		name := claims.UserId
+		role := claims.UserRole
+
+		return c.String(http.StatusOK, "Welcome "+name+" with role: "+role+"!")
+	})
 
 	// Admin Routes (requires "UserRole" == "admin")
-	// adminGroup := e.Group("/api/admin")
-	// adminGroup.Use(authMiddleware, adminMiddleware)
+	adminGroup := e.Group("/api/admin")
+	adminGroup.Use(authenticationMiddleware.JwtAuthMiddleware(), authorizationMiddleware.RequireAdminMiddleware())
+	// for testing purposes
+	adminGroup.GET("/users", func(c echo.Context) error {
+		token, ok := c.Get("user").(*gojwt.Token)
+		if !ok {
+			return echo.ErrForbidden
+		}
+		claims, ok := token.Claims.(*jwt.JwtCustomClaims)
+		if !ok {
+			return echo.ErrForbidden
+		}
+		name := claims.UserId
+		role := claims.UserRole
+
+		return c.String(http.StatusOK, "Welcome "+name+" with role: "+role+"!e")
+	})
 }
 
 func connectToDatabase(ctx context.Context, cfg *config.Config) *repository.Queries {
