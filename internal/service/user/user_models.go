@@ -1,6 +1,8 @@
 package user
 
 import (
+	"strings"
+
 	"github.com/fgeck/go-register/internal/repository"
 	"github.com/google/uuid"
 )
@@ -43,7 +45,7 @@ type UserRole struct {
 }
 
 func UserRoleFromString(name string) UserRole {
-	switch name {
+	switch strings.ToUpper(name) {
 	case UserRoleUser.Name:
 		return UserRoleUser
 	case UserRoleAdmin.Name:
