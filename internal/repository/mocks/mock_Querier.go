@@ -7,7 +7,7 @@ package repository
 import (
 	"context"
 
-	"github.com/fgeck/go-register/internal/repository"
+	"github.com/fgeck/gotth-postgres/internal/repository"
 	"github.com/jackc/pgx/v5/pgtype"
 	mock "github.com/stretchr/testify/mock"
 )

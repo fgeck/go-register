@@ -1,4 +1,4 @@
-# go-register
+# gotth-postgres
 
 Template repo for user registration and signin based on GoTTH (Go, Tailwind, Templ, Htmx) stack
 
@@ -28,7 +28,6 @@ air &
 * [air](https://github.com/air-verse/air)
 * [tailwindcss](https://tailwindcss.com/)
 * [podman](https://podman.io/)
-* [daisyui](https://daisyui.com/) ?
 
 ## ToDo
 
@@ -41,10 +40,10 @@ air &
     * [x] password salting and hashing before storing
     * [x] security related config - introduce config from ENV
 * [x] build login handler emitting JWT with proper claims
-    * [ ] on successful login set cookie with JWT in HTTP response
-* [ ] middleware for checking JWT from cookie
-* [ ] middleware for asserting claims from JWT as userId and Role
+    * [x] on successful login set cookie with JWT in HTTP response
+* [x] middleware for checking JWT from cookie
+* [x] middleware for asserting claims from JWT as userId and Role
 * [ ] Loggingframework like logrus
 * [ ] Dependency Injection Framework?
-* [x] github actions for: fmt, golangci lint, build, test
+* [x] github actions for: fmt, golangci lint, build, unittest, integrationtest
 * [ ] 

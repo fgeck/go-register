@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/fgeck/go-register/internal/service/config"
+	"github.com/fgeck/gotth-postgres/internal/service/config"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

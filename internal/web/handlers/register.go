@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"net/http"
 
-	customErrors "github.com/fgeck/go-register/internal/service/errors"
-	"github.com/fgeck/go-register/internal/service/loginRegister"
-	"github.com/fgeck/go-register/internal/service/render"
-	"github.com/fgeck/go-register/templates/views"
+	customErrors "github.com/fgeck/gotth-postgres/internal/service/errors"
+	"github.com/fgeck/gotth-postgres/internal/service/loginRegister"
+	"github.com/fgeck/gotth-postgres/internal/service/render"
+	"github.com/fgeck/gotth-postgres/templates/views"
 	echo "github.com/labstack/echo/v4"
 )
 

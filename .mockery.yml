@@ -11,21 +11,21 @@ require-template-schema-exists: true
 template: testify
 template-schema: '{{.Template}}.schema.json'
 packages:
-  github.com/fgeck/go-register/internal/repository:
+  github.com/fgeck/gotth-postgres/internal/repository:
     config:
       all: true
-  github.com/fgeck/go-register/internal/service/loginRegister:
+  github.com/fgeck/gotth-postgres/internal/service/loginRegister:
     config:
       all: true
-  github.com/fgeck/go-register/internal/service/security/jwt:
+  github.com/fgeck/gotth-postgres/internal/service/security/jwt:
     config:
       all: true
-  github.com/fgeck/go-register/internal/service/security/password:
+  github.com/fgeck/gotth-postgres/internal/service/security/password:
     config:
       all: true
-  github.com/fgeck/go-register/internal/service/user:
+  github.com/fgeck/gotth-postgres/internal/service/user:
     config:
       all: true
-  github.com/fgeck/go-register/internal/service/validation:
+  github.com/fgeck/gotth-postgres/internal/service/validation:
     config:
       all: true

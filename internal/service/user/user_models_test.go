@@ -5,7 +5,7 @@ package user_test
 import (
 	"testing"
 
-	"github.com/fgeck/go-register/internal/service/user"
+	"github.com/fgeck/gotth-postgres/internal/service/user"
 	"github.com/stretchr/testify/assert"
 )
 
