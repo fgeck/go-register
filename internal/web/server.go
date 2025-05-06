@@ -69,8 +69,14 @@ func InitServer(e *echo.Echo, cfg *config.Config) {
 	res.Use(mw.JwtAuthMiddleware(cfg.App.JwtSecret))
 	// for testing purposes
 	res.GET("", func(c echo.Context) error {
-		user := c.Get("user").(*gojwt.Token)
-		claims := user.Claims.(*jwt.JwtCustomClaims)
+		token, ok := c.Get("user").(*gojwt.Token)
+		if !ok {
+			return echo.ErrForbidden
+		}
+		claims, ok := token.Claims.(*jwt.JwtCustomClaims)
+		if !ok {
+			return echo.ErrForbidden
+		}
 		name := claims.UserId
 		role := claims.UserRole
 
@@ -82,8 +88,14 @@ func InitServer(e *echo.Echo, cfg *config.Config) {
 	adminGroup.Use(mw.JwtAuthMiddleware(cfg.App.JwtSecret), mw.RequireAdminMiddleware())
 	// for testing purposes
 	adminGroup.GET("/users", func(c echo.Context) error {
-		user := c.Get("user").(*gojwt.Token)
-		claims := user.Claims.(*jwt.JwtCustomClaims)
+		token, ok := c.Get("user").(*gojwt.Token)
+		if !ok {
+			return echo.ErrForbidden
+		}
+		claims, ok := token.Claims.(*jwt.JwtCustomClaims)
+		if !ok {
+			return echo.ErrForbidden
+		}
 		name := claims.UserId
 		role := claims.UserRole
 
