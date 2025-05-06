@@ -52,6 +52,8 @@ func InitServer(e *echo.Echo, cfg *config.Config) {
 	loginHandler := handlers.NewLoginHandler(loginRegisterService)
 
 	// Middlewares
+	authenticationMiddleware := mw.NewAuthenticationMiddleware(cfg.App.JwtSecret)
+	authorizationMiddleware := mw.NewAuthorizationMiddleware()
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 
@@ -66,7 +68,7 @@ func InitServer(e *echo.Echo, cfg *config.Config) {
 
 	// JWT Middleware only
 	res := e.Group("/restricted")
-	res.Use(mw.JwtAuthMiddleware(cfg.App.JwtSecret))
+	res.Use(authenticationMiddleware.JwtAuthMiddleware())
 	// for testing purposes
 	res.GET("", func(c echo.Context) error {
 		token, ok := c.Get("user").(*gojwt.Token)
@@ -85,7 +87,7 @@ func InitServer(e *echo.Echo, cfg *config.Config) {
 
 	// Admin Routes (requires "UserRole" == "admin")
 	adminGroup := e.Group("/api/admin")
-	adminGroup.Use(mw.JwtAuthMiddleware(cfg.App.JwtSecret), mw.RequireAdminMiddleware())
+	adminGroup.Use(authenticationMiddleware.JwtAuthMiddleware(), authorizationMiddleware.RequireAdminMiddleware())
 	// for testing purposes
 	adminGroup.GET("/users", func(c echo.Context) error {
 		token, ok := c.Get("user").(*gojwt.Token)

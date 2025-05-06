@@ -16,7 +16,7 @@ import (
 func TestJwtAuthMiddleware(t *testing.T) {
 	t.Parallel()
 	jwtSecret := "testsecret"
-	middleware := mw.JwtAuthMiddleware(jwtSecret)
+	middleware := mw.NewAuthenticationMiddleware(jwtSecret).JwtAuthMiddleware()
 
 	t.Run("No token provided", func(t *testing.T) {
 		t.Parallel()

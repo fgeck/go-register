@@ -9,7 +9,17 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-func RequireAdminMiddleware() echo.MiddlewareFunc {
+type AuthorizationMiddlewareInterface interface {
+	RequireAdminMiddleware() echo.MiddlewareFunc
+}
+
+type AuthorizationMiddleware struct{}
+
+func NewAuthorizationMiddleware() *AuthorizationMiddleware {
+	return &AuthorizationMiddleware{}
+}
+
+func (a *AuthorizationMiddleware) RequireAdminMiddleware() echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
 			token, ok := c.Get("user").(*gojwt.Token)

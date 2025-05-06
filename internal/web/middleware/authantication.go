@@ -7,9 +7,22 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-func JwtAuthMiddleware(jwtSecret string) echo.MiddlewareFunc {
+type AuthenticationMiddlewareInterface interface {
+	JwtAuthMiddleware(jwtSecret string) echo.MiddlewareFunc
+}
+type AuthenticationMiddleware struct {
+	jwtSecret string
+}
+
+func NewAuthenticationMiddleware(jwtSecret string) *AuthenticationMiddleware {
+	return &AuthenticationMiddleware{
+		jwtSecret: jwtSecret,
+	}
+}
+
+func (a *AuthenticationMiddleware) JwtAuthMiddleware() echo.MiddlewareFunc {
 	return echojwt.WithConfig(echojwt.Config{
-		SigningKey:  []byte(jwtSecret),
+		SigningKey:  []byte(a.jwtSecret),
 		TokenLookup: "cookie:token",
 		NewClaimsFunc: func(c echo.Context) gojwt.Claims {
 			return new(jwt.JwtCustomClaims)

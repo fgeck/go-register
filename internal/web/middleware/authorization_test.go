@@ -17,6 +17,7 @@ import (
 
 func TestRequireAdminMiddleware(t *testing.T) {
 	t.Parallel()
+	middleware := mw.NewAuthorizationMiddleware().RequireAdminMiddleware()
 
 	t.Run("No token in context", func(t *testing.T) {
 		t.Parallel()
@@ -25,7 +26,6 @@ func TestRequireAdminMiddleware(t *testing.T) {
 		rec := httptest.NewRecorder()
 		c := e.NewContext(req, rec)
 
-		middleware := mw.RequireAdminMiddleware()
 		handler := middleware(func(c echo.Context) error {
 			return c.String(http.StatusOK, "success")
 		})
@@ -45,7 +45,6 @@ func TestRequireAdminMiddleware(t *testing.T) {
 		c := e.NewContext(req, rec)
 		c.Set("user", "invalid_token_type")
 
-		middleware := mw.RequireAdminMiddleware()
 		handler := middleware(func(c echo.Context) error {
 			return c.String(http.StatusOK, "success")
 		})
@@ -66,7 +65,6 @@ func TestRequireAdminMiddleware(t *testing.T) {
 		token := &gojwt.Token{Claims: gojwt.MapClaims{}}
 		c.Set("user", token)
 
-		middleware := mw.RequireAdminMiddleware()
 		handler := middleware(func(c echo.Context) error {
 			return c.String(http.StatusOK, "success")
 		})
@@ -88,7 +86,6 @@ func TestRequireAdminMiddleware(t *testing.T) {
 		token := &gojwt.Token{Claims: claims}
 		c.Set("user", token)
 
-		middleware := mw.RequireAdminMiddleware()
 		handler := middleware(func(c echo.Context) error {
 			return c.String(http.StatusOK, "success")
 		})
@@ -110,7 +107,6 @@ func TestRequireAdminMiddleware(t *testing.T) {
 		token := &gojwt.Token{Claims: claims}
 		c.Set("user", token)
 
-		middleware := mw.RequireAdminMiddleware()
 		handler := middleware(func(c echo.Context) error {
 			return c.String(http.StatusOK, "success")
 		})
